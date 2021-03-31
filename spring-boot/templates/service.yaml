@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ include "spring-boot.fullname" . }}
+  labels:
+{{ include "spring-boot.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "spring-boot.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "spring-boot.fullname" . }}
+  namespace: kong
+spec:
+  type: ExternalName
+  externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
+  ports:
+    - port: 8080
+      name: high
+      protocol: TCP
+      targetPort: 8080
+    - port: 80
+      name: low
+      protocol: TCP
+      targetPort: 8080

@@ -1,0 +1,106 @@
+# Default values for spring-boot.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+environment: tests
+namespace: default
+appName: spring-demo
+replicaCount: 1
+image:
+  repository: registry.gitlab.com/join-up/cross-cutting/health/server-mongo-health-check
+  tag: master
+  pullPolicy: Always
+
+imagePullSecrets:
+  - name: docker-registery-secret
+restartPolicy: Always
+
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: { }
+  stripPath: "true"
+  httpsOnly: true
+  externalDnsEnabled: true
+
+
+podAnnotations: { }
+#  prometheus.io/scrape: "true"
+#  prometheus.io/path: "/actuator/prometheus"
+#  - name: MONGO_CLUSTER_ADDRESS
+#    value: upy-dev-vupgk.mongodb.net/test?retryWrites=true&w=majority
+#  - name: MONGO_USER
+#    valueFrom:
+#      secretKeyRef:
+#        key: mongo.user
+#        name: mongo-local
+#  - name: MONGO_PASSWORD
+#    valueFrom:
+#      secretKeyRef:
+#        key: mongo.password
+#        name: mongo-local
+container:
+  ## Extra environment variables to be injected
+  environment: #{}
+  #    DATABASE_ENGINE: mysql
+  #    DATABASE_HOST: mysql
+  #    DATABASE_NAME: spring
+  #    DATABASE_USERNAME: spring
+  #    DATABASE_PASSWORD: spring
+  ## Exra environment variables from secret to be inject
+  secrets: # {}
+    - name: mongo
+      env:
+        MONGO_CLUSTER_ADDRESS: mongo.address
+        MONGO_USER: mongo.user
+        MONGO_PASSWORD: mongo.password
+#    - name: mysecret2
+#      env:
+#        MYVAR3: Key3InMySecret
+
+resources: { }
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+## uncomment and modify the following livenessProbe and readinessProbe.
+## These defaults should work with anything that uses the spring health actuator.
+livenessProbe: { }
+#   httpGet:
+#     path: /actuator/health
+#     port: http
+#   initialDelaySeconds: 300
+#   periodSeconds: 10
+readinessProbe: { }
+#   httpGet:
+#     path: /actuator/health
+#     port: http
+#   initialDelaySeconds: 60
+#   periodSeconds: 10
+
+nodeSelector: { }
+
+tolerations: [ ]
+
+affinity: { }
+
+
+hpa: { }
+#  minReplicas: 2
+#  maxReplicas: 4
+#  cpuMax: 80
+#  memoryMax: 70
+
+podDisruptionBudget: { }
+#  minAvailable: 1
