@@ -4,7 +4,7 @@
 environment: tests
 namespace: default
 appName: spring-demo
-replicaCount: 1
+replicaCount: 2
 image:
   repository: registry.gitlab.com/join-up/cross-cutting/health/server-mongo-health-check
   tag: master
@@ -21,9 +21,9 @@ service:
   port: 80
 
 ingress:
-  enabled: false
+  enabled: true
   annotations: { }
-  stripPath: "true"
+  stripPath: '"true"'
   httpsOnly: true
   externalDnsEnabled: true
 
@@ -31,18 +31,7 @@ ingress:
 podAnnotations: { }
 #  prometheus.io/scrape: "true"
 #  prometheus.io/path: "/actuator/prometheus"
-#  - name: MONGO_CLUSTER_ADDRESS
-#    value: upy-dev-vupgk.mongodb.net/test?retryWrites=true&w=majority
-#  - name: MONGO_USER
-#    valueFrom:
-#      secretKeyRef:
-#        key: mongo.user
-#        name: mongo-local
-#  - name: MONGO_PASSWORD
-#    valueFrom:
-#      secretKeyRef:
-#        key: mongo.password
-#        name: mongo-local
+
 container:
   ## Extra environment variables to be injected
   environment: #{}
@@ -55,9 +44,16 @@ container:
   secrets: # {}
     - name: mongo
       env:
-        MONGO_CLUSTER_ADDRESS: mongo.address
-        MONGO_USER: mongo.user
-        MONGO_PASSWORD: mongo.password
+        MONGO_CLUSTER_ADDRESS: address
+        MONGO_USER: user
+        MONGO_PASSWORD: password
+    - name: kafka
+      env:
+        KAFKA_BOOTSTRAP_SERVERS: bootstrapServers
+        KAFKA_PASSWORD: password
+        KAFKA_USER: user
+        KAFKA_USER_INFO: userInfo
+        KAFKA_REGISTRY_URL: registryUrl
 #    - name: mysecret2
 #      env:
 #        MYVAR3: Key3InMySecret
