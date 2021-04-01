@@ -1,8 +1,8 @@
 image:
   name: registry.gitlab.com/join-up/cross-cutting/tools/codefresh:latest
   entrypoint:
-    - '/usr/bin/env'
-    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    - '/bin/sh'
+
 variables:
   PLAN: plan.tfplan
   JSON_PLAN_FILE: tfplan.json
