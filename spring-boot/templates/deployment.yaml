@@ -35,12 +35,23 @@ spec:
             - --spring.config.additional-location=/application-kube.yml
             - --spring.profiles.active=default,kube
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if or .Values.container.secrets .Values.container.environment}}
           env:
             {{- range $key, $value := .Values.container.environment }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- if .Values.container.defaultSecrets }}
+            {{- range .Values.container.defaultSecrets }}
+            {{- $secretName := .name }}
+            {{- range $key, $value :=  .env }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
             {{- if .Values.container.secrets }}
             {{- range .Values.container.secrets }}
             {{- $secretName := .name }}
@@ -50,7 +61,6 @@ spec:
                 secretKeyRef:
                   name: {{ $secretName }}
                   key: {{ $value }}
-          {{- end }}
           {{- end }}
           {{- end }}
           {{- end }}
