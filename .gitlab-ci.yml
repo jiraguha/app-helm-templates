@@ -1,0 +1,26 @@
+image: registry.gitlab.com/join-up/cross-cutting/tools/codefresh:latest
+
+variables:
+  PLAN: plan.tfplan
+  JSON_PLAN_FILE: tfplan.json
+  GITLAB_TOKEN: $CI_BUILD_TOKEN
+
+
+before_script:
+  - codefresh auth create-context --api-key $CODEFRESH_API_TOKEN
+  - helm repo add upy_public cm://h.cfcr.io/upy/public
+  - helm repo add upy_default cm://h.cfcr.io/upy/default
+
+stages:
+  - deploy
+
+
+deploy-hello:
+  stage: deploy
+  script:
+    - cd hollo && helm package . && helm push mychart/ upy_default
+
+deploy-spring:
+  stage: deploy
+  script:
+    - cd spring-boot && helm package . && helm push mychart/ upy_default
