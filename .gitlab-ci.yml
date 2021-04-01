@@ -18,9 +18,13 @@ stages:
 deploy-hello:
   stage: deploy
   script:
-    - cd hollo && helm package . && helm push mychart/ upy_default
+    - cd hello
+    - helm package .
+    - helm push hello/ upy_default
 
 deploy-spring:
   stage: deploy
   script:
-    - cd spring-boot && helm package . && helm push mychart/ upy_default
+    - cd spring-boot
+    - helm package .
+    - helm push spring-boot/ upy_default
