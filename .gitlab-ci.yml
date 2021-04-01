@@ -24,6 +24,10 @@ deploy-hello:
     - cd hello
     - helm package .
     - helm push . upy_default
+  only:
+    refs:
+      - tags
+
 
 deploy-spring:
   stage: deploy
@@ -31,3 +35,6 @@ deploy-spring:
     - cd spring-boot
     - helm package .
     - helm push . upy_default
+  only:
+    refs:
+      - tags
