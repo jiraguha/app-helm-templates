@@ -23,11 +23,11 @@ deploy-hello:
   script:
     - cd hello
     - helm package .
-    - helm push hello upy_default
+    - helm push . upy_default
 
 deploy-spring:
   stage: deploy
   script:
     - cd spring-boot
     - helm package .
-    - helm push spring-boot upy_default
+    - helm push . upy_default
