@@ -5,6 +5,9 @@ data:
       profiles:
         active: kube
         include: default
+      config:
+        use-legacy-processing: true
+    {{- if .Values.enableDefaultConfig}}
       data:
         mongodb:
           uri: mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_CLUSTER_ADDRESS}
@@ -18,6 +21,7 @@ data:
           basic.auth.credentials.source: USER_INFO
           schema.registry.basic.auth.user.info: ${KAFKA_USER_INFO}
           schema.registry.url: ${KAFKA_REGISTRY_URL}
+    {{- end }}
     graphql:
       packages:
         - "io.joinupy"

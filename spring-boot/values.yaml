@@ -17,6 +17,7 @@ restartPolicy: Always
 fullnameOverride: ""
 
 skaffoldEnabled: false
+enableDefaultConfig: true
 
 service:
   type: ClusterIP
@@ -36,7 +37,7 @@ podAnnotations: { }
 
 container:
   ## Extra environment variables to be injected
-  environment: #{}
+  environment:
   #    DATABASE_ENGINE: mysql
   #    DATABASE_HOST: mysql
   #    DATABASE_NAME: spring
