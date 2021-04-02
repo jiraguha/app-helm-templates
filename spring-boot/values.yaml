@@ -16,6 +16,8 @@ restartPolicy: Always
 
 fullnameOverride: ""
 
+skaffoldEnabled: false
+
 service:
   type: ClusterIP
   port: 80

@@ -34,3 +34,12 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
+
+
+{{- define "spring-boot.image" -}}
+{{- if .Values.skaffoldEnabled }}
+{{- .Values.image.repository }}
+{{- else }}
+{{- .Values.image.repository }}:{{- .Values.image.tag }}
+{{- end }}
+{{- end }}
