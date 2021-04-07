@@ -31,23 +31,23 @@ ingress:
   externalDnsEnabled: true
 
 
-podAnnotations: { }
+podAnnotations: {}
 #  prometheus.io/scrape: "true"
 #  prometheus.io/path: "/actuator/prometheus"
 
 container:
   ## Extra environment variables to be injected
-  environment:
-  #    DATABASE_ENGINE: mysql
-  #    DATABASE_HOST: mysql
-  #    DATABASE_NAME: spring
-  #    DATABASE_USERNAME: spring
-  #    DATABASE_PASSWORD: spring
+  environment: {}
+#    DATABASE_ENGINE: mysql
+#    DATABASE_HOST: mysql
+#    DATABASE_NAME: spring
+#    DATABASE_USERNAME: spring
+#    DATABASE_PASSWORD: spring
   ## Exra environment variables from secret to be inject
-  secrets:  {}
-  #    - name: mysecret2
-  #      env:
-  #        MYVAR3: Key3InMySecret
+  secrets: {}
+#    - name: mysecret2
+#      env:
+#        MYVAR3: Key3InMySecret
   defaultSecrets:
     - name: mongo
       env:
