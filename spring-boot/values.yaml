@@ -9,6 +9,7 @@ image:
   repository: registry.gitlab.com/join-up/cross-cutting/health/server-mongo-health-check
   tag: master
   pullPolicy: Always
+  ref: none
 
 imagePullSecrets:
   - name: docker-registery-secret
