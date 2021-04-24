@@ -12,6 +12,10 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 6565
+      name: grpc
+      protocol: TCP
+      targetPort: 6565
   selector:
     app.kubernetes.io/name: {{ include "spring-boot.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -34,4 +38,8 @@ spec:
       name: low
       protocol: TCP
       targetPort: 8080
+    - port: 6565
+      name: grpc
+      protocol: TCP
+      targetPort: 6565
 {{- end}}
