@@ -10,4 +10,4 @@ spec:
     - port: 80
       name: low
       protocol: TCP
-      targetPort: 8080
+      targetPort: {{ .Values.targetPort }}
