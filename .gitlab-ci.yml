@@ -15,11 +15,11 @@ before_script:
   - helm repo add upy_default cm://h.cfcr.io/upy/default
 
 stages:
-  - deploy
+  - publish
 
 
-deploy-hello:
-  stage: deploy
+publish-hello:
+  stage: publish
   script:
     - cd hello
     - helm package .
@@ -29,10 +29,20 @@ deploy-hello:
       - tags
 
 
-deploy-spring:
-  stage: deploy
+publish-spring:
+  stage: publish
   script:
     - cd spring-boot
+    - helm package .
+    - helm push . upy_default
+  only:
+    refs:
+      - tags
+
+publish-dns:
+  stage: publish
+  script:
+    - cd dns-boot
     - helm package .
     - helm push . upy_default
   only:

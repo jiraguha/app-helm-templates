@@ -1,0 +1,13 @@
+# Default values for spring-boot.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+environment: tests
+namespace: default
+appName: spring-demo
+
+enabled: false
+annotations: {}
+stripPath: '"true"'
+httpsOnly: true
+externalDnsEnabled: true
+targetPort: 8080

@@ -1,0 +1,34 @@
+{{- $fullName := include "dns.fullname" . -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  namespace: kong
+  name: {{ $fullName }}
+  annotations:
+    {{- with .Values.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    konghq.com/strip-path: {{.Values.stripPath}}
+    #    konghq.com/plugins: httpbin-auth
+    {{- if .Values.httpsOnly }}
+    konghq.com/override: https-only
+    {{- end }}
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
+    kubernetes.io/ingress.class: kong
+    {{- if .Values.externalDnsEnabled }}
+    external-dns.alpha.kubernetes.io/hostname: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+  {{- end }}
+spec:
+  tls:
+    - secretName: {{ $fullName }}-joinupy-io
+      hosts:
+        - {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+  rules:
+    - host: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: 80
