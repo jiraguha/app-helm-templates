@@ -17,7 +17,7 @@ metadata:
     konghq.com/override: https-only
     {{- end }}
     {{- if $enabledGrpc }}
-    konghq.com/protocols: grpc,grpcs
+    konghq.com/protocols: grpc,grpcs,http,https
     {{- end }}
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
