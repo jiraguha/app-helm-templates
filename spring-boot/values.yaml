@@ -25,8 +25,12 @@ service:
   port: 80
 
 ingress:
-  enabledHttp: true
-  enabledGrpc: true
+  http:
+    enabled: false
+#    nameOverride: ""
+  grpc:
+    enabled: true
+  #    nameOverride: ""
   annotations: { }
   stripPath: '"true"'
 #  fixme: true by default

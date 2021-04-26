@@ -46,7 +46,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 
 {{- define "spring-boot.http-label" -}}
-{{- if and .Values.ingress.enabledHttp .Values.ingress.enabledGrpc }}
+{{- if and .Values.ingress.http.enabled .Values.ingress.grpc.enabled }}
 {{- include "spring-boot.fullname" . -}}{{- printf "-http" }}
 {{- else }}
 {{- include "spring-boot.fullname" . -}}
@@ -54,9 +54,26 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{- define "spring-boot.grpc-label" -}}
-{{- if and .Values.ingress.enabledHttp .Values.ingress.enabledGrpc }}
+{{- if and .Values.ingress.grpc.enabled .Values.ingress.http.enabled }}
 {{- include "spring-boot.fullname" . -}}{{- printf "-grpc" }}
 {{- else }}
 {{- include "spring-boot.fullname" . -}}
+{{- end }}
+{{- end }}
+
+
+{{- define "spring-boot.http-ingress-name" -}}
+{{- if .Values.ingress.http.nameOverride}}
+{{- .Values.ingress.http.nameOverride}}
+{{- else }}
+{{- include "spring-boot.http-label" . -}}
+{{- end }}
+{{- end }}
+
+{{- define "spring-boot.gprc-ingress-name" -}}
+{{- if .Values.ingress.grpc.nameOverride}}
+{{- .Values.ingress.grpc.nameOverride}}
+{{- else }}
+{{- include "spring-boot.grpc-label" . -}}
 {{- end }}
 {{- end }}

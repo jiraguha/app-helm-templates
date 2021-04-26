@@ -1,10 +1,10 @@
-{{- if .Values.ingress.enabledGrpc  -}}
-{{- $fullName := include "spring-boot.grpc-label" . -}}
+{{- if .Values.ingress.grpc.enabled  -}}
+{{- $serviceName := include "spring-boot.gprc-ingress-name" . -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   namespace: kong
-  name: {{ $fullName }}
+  name: {{ $serviceName }}
   annotations:
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
@@ -14,35 +14,35 @@ metadata:
     {{- if .Values.ingress.httpsOnly }}
     konghq.com/override: https-only
     {{- end }}
-    konghq.com/protocols: grpc,grpcs,http,https
+    konghq.com/protocols: grpc,grpcs
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
     kubernetes.io/ingress.class: kong
     {{- if .Values.ingress.externalDnsEnabled }}
-    external-dns.alpha.kubernetes.io/hostname: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+    external-dns.alpha.kubernetes.io/hostname: {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
   {{- end }}
 spec:
   tls:
-    - secretName: {{ $fullName }}-joinupy-io
+    - secretName: {{ $serviceName }}-joinupy-io
       hosts:
-        - {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+        - {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
   rules:
-    - host: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+    - host: {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
       http:
         paths:
           - backend:
-              serviceName: {{ $fullName }}
+              serviceName: {{ $serviceName }}
               servicePort: 6565
  {{- end }}
 
 ---
-{{- if .Values.ingress.enabledHttp -}}
-{{- $fullName := include "spring-boot.http-label" . -}}
+{{- if .Values.ingress.http.enabled -}}
+{{- $serviceName := include "spring-boot.http-ingress-name" . -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   namespace: kong
-  name: {{ $fullName }}
+  name: {{ $serviceName }}
   annotations:
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
@@ -56,18 +56,18 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
     kubernetes.io/ingress.class: kong
     {{- if .Values.ingress.externalDnsEnabled }}
-    external-dns.alpha.kubernetes.io/hostname: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+    external-dns.alpha.kubernetes.io/hostname: {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
   {{- end }}
 spec:
   tls:
-    - secretName: {{ $fullName }}-joinupy-io
+    - secretName: {{ $serviceName }}-joinupy-io
       hosts:
-        - {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+        - {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
   rules:
-    - host: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+    - host: {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
       http:
         paths:
           - backend:
-              serviceName: {{ $fullName }}
+              serviceName: {{ $serviceName }}
               servicePort: 80
 {{- end }}
