@@ -43,3 +43,20 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- .Values.image.repository }}:{{- .Values.image.tag }}
 {{- end }}
 {{- end }}
+
+
+{{- define "spring-boot.http-label" -}}
+{{- if and .Values.ingress.enabledHttp .Values.ingress.enabledGrpc }}
+{{- include "spring-boot.fullname" . -}}{{- printf "-http" }}
+{{- else }}
+{{- include "spring-boot.fullname" . -}}
+{{- end }}
+{{- end }}
+
+{{- define "spring-boot.grpc-label" -}}
+{{- if and .Values.ingress.enabledHttp .Values.ingress.enabledGrpc }}
+{{- include "spring-boot.fullname" . -}}{{- printf "-grpc" }}
+{{- else }}
+{{- include "spring-boot.fullname" . -}}
+{{- end }}
+{{- end }}

@@ -20,11 +20,11 @@ spec:
     app.kubernetes.io/name: {{ include "spring-boot.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 ---
-{{- if .Values.ingress.enabledGrpc -}}
+{{- if .Values.ingress.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "spring-boot.fullname" . }}-grpc
+  name: {{ include "spring-boot.fullname" . }}
   namespace: kong
   annotations:
     konghq.com/protocol: grpcs
@@ -32,8 +32,8 @@ spec:
   type: ExternalName
   externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
   ports:
-    - port: 6565
-      name: grpc
+    - port: 8080
+      name: high
       protocol: TCP
       targetPort: 6565
 {{- end}}
@@ -42,7 +42,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "spring-boot.fullname" . }}-http
+  name: {{ include "spring-boot.http-label" . }}
   namespace: kong
 spec:
   type: ExternalName

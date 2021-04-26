@@ -1,7 +1,5 @@
-{{- if or .Values.ingress.enabledGrpc .Values.ingress.enabledHttp -}}
-{{- $fullName := include "spring-boot.fullname" . -}}
-{{- $enabledGrpc := .Values.ingress.enabledGrpc -}}
-{{- $enabledHttp := .Values.ingress.enabledHttp -}}
+{{- if .Values.ingress.enabledGrpc  -}}
+{{- $fullName := include "spring-boot.grpc-label" . -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
@@ -16,8 +14,43 @@ metadata:
     {{- if .Values.ingress.httpsOnly }}
     konghq.com/override: https-only
     {{- end }}
-    {{- if $enabledGrpc }}
     konghq.com/protocols: grpc,grpcs,http,https
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
+    kubernetes.io/ingress.class: kong
+    {{- if .Values.ingress.externalDnsEnabled }}
+    external-dns.alpha.kubernetes.io/hostname: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+  {{- end }}
+spec:
+  tls:
+    - secretName: {{ $fullName }}-joinupy-io
+      hosts:
+        - {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+  rules:
+    - host: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+      http:
+        paths:
+          - backend:
+              serviceName: {{ $fullName }}
+              servicePort: 6565
+ {{- end }}
+
+---
+{{- if .Values.ingress.enabledHttp -}}
+{{- $fullName := include "spring-boot.http-label" . -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  namespace: kong
+  name: {{ $fullName }}
+  annotations:
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    konghq.com/strip-path: {{.Values.ingress.stripPath}}
+    #    konghq.com/plugins: httpbin-auth
+    {{- if .Values.ingress.httpsOnly }}
+    konghq.com/override: https-only
     {{- end }}
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
@@ -34,14 +67,7 @@ spec:
     - host: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
       http:
         paths:
-          {{- if $enabledHttp }}
           - backend:
-              serviceName: {{ $fullName }}-http
+              serviceName: {{ $fullName }}
               servicePort: 80
-          {{- end }}
-          {{- if $enabledHttp }}
-          - backend:
-              serviceName: {{ $fullName }}-grpc
-              servicePort: 6565
-          {{- end }}
-  {{- end }}
+{{- end }}
