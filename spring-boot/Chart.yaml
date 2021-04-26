@@ -1,5 +1,10 @@
 apiVersion: v2
 appVersion: "0.1.0"
-description: A Helm chart for spring
+description: upy spring application
 name: spring-boot
-version: 0.2.0
+version: 0.3.0
+home: https://gitlab.com/join-up/cross-cutting/helm/app-templates.git
+keywords:
+  - spring
+maintainers:
+  - name: jpiraguha

@@ -1,5 +1,10 @@
 apiVersion: v2
 appVersion: "0.1.0"
-description: A Helm chart for spring
+description: Dns networking
 name: dns
-version: 0.1.0
+version: 0.1.1
+home: https://gitlab.com/join-up/cross-cutting/helm/app-templates.git
+keywords:
+  - dns
+maintainers:
+  - name: jpiraguha
