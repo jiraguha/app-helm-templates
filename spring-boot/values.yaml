@@ -29,12 +29,12 @@ ingress:
     enabled: false
 #    nameOverride: ""
   grpc:
-    enabled: true
+    enabled: false
   #    nameOverride: ""
   annotations: { }
   stripPath: '"true"'
 #  fixme: true by default
-  httpsOnly: false
+  httpsOnly: true
   externalDnsEnabled: true
 
 
