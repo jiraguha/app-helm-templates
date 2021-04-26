@@ -36,12 +36,12 @@ spec:
         paths:
           {{- if $enabledHttp }}
           - backend:
-              serviceName: {{ $fullName }}
+              serviceName: {{ $fullName }}-http
               servicePort: 80
           {{- end }}
           {{- if $enabledHttp }}
           - backend:
-              serviceName: {{ $fullName }}
+              serviceName: {{ $fullName }}-grpc
               servicePort: 6565
           {{- end }}
   {{- end }}

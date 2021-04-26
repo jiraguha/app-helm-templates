@@ -20,19 +20,30 @@ spec:
     app.kubernetes.io/name: {{ include "spring-boot.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 ---
-{{- $fullName := include "spring-boot.fullname" . -}}
-{{- $enabledGrpc := .Values.ingress.enabledGrpc -}}
-{{- $enabledHttp := .Values.ingress.enabledHttp -}}
-{{- if or $enabledGrpc $enabledHttp -}}
+{{- if .Values.ingress.enabledGrpc -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $fullName }}
+  name: {{ include "spring-boot.fullname" . }}-grpc
   namespace: kong
-  {{- if $enabledGrpc}}
   annotations:
     konghq.com/protocol: grpcs
-  {{- end }}
+spec:
+  type: ExternalName
+  externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
+  ports:
+    - port: 6565
+      name: grpc
+      protocol: TCP
+      targetPort: 6565
+{{- end}}
+---
+{{- if .Values.ingress.enabledHttp -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "spring-boot.fullname" . }}-http
+  namespace: kong
 spec:
   type: ExternalName
   externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
@@ -41,8 +52,4 @@ spec:
       name: http
       protocol: TCP
       targetPort: 80
-    - port: 6565
-      name: grpc
-      protocol: TCP
-      targetPort: 6565
 {{- end}}
