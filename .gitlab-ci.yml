@@ -42,7 +42,7 @@ publish-spring:
 publish-dns:
   stage: publish
   script:
-    - cd dns-boot
+    - cd dns
     - helm package .
     - helm push . upy_default
   only:
