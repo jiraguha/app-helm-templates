@@ -1,5 +1,7 @@
-{{- if .Values.ingress.enabled -}}
+{{- if or .Values.ingress.enabledGrpc .Values.ingress.enabledHttp -}}
 {{- $fullName := include "spring-boot.fullname" . -}}
+{{- $enabledGrpc := .Values.ingress.enabledGrpc -}}
+{{- $enabledHttp := .Values.ingress.enabledHttp -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
@@ -13,6 +15,9 @@ metadata:
     #    konghq.com/plugins: httpbin-auth
     {{- if .Values.ingress.httpsOnly }}
     konghq.com/override: https-only
+    {{- end }}
+    {{- if $enabledGrpc }}
+    konghq.com/protocols: grpc,grpcs
     {{- end }}
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
@@ -29,8 +34,14 @@ spec:
     - host: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
       http:
         paths:
-          - path: /
-            backend:
+          {{- if $enabledHttp }}
+          - backend:
               serviceName: {{ $fullName }}
               servicePort: 80
+          {{- end }}
+          {{- if $enabledHttp }}
+          - backend:
+              serviceName: {{ $fullName }}
+              servicePort: 6565
+          {{- end }}
   {{- end }}

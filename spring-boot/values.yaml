@@ -25,10 +25,12 @@ service:
   port: 80
 
 ingress:
-  enabled: false
+  enabledHttp: true
+  enabledGrpc: true
   annotations: { }
   stripPath: '"true"'
-  httpsOnly: true
+#  fixme: true by default
+  httpsOnly: false
   externalDnsEnabled: true
 
 
