@@ -7,7 +7,7 @@ spec:
   type: ExternalName
   externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
   ports:
-    - port: 80
+    - port: {{ .Values.port }}
       name: low
       protocol: TCP
       targetPort: {{ .Values.targetPort }}

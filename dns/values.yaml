@@ -10,4 +10,6 @@ annotations: {}
 stripPath: '"true"'
 httpsOnly: true
 externalDnsEnabled: true
-targetPort: 8080
+port: 433
+targetPort: 433
+#nameOverride: ""
