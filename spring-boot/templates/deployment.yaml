@@ -74,6 +74,9 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+            - name: grpc
+              containerPort: {{ .Values.grpc.port }}
+              protocol: TCP
           ## application-kube
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File

@@ -1,6 +1,9 @@
 apiVersion: v1
 data:
   application-kube.yml: |-
+    grpc:
+      port: {{.Values.grpc.port}}
+      enable-reflection: {{.Values.grpc.enableReflection}}
     spring:
       profiles:
         active: kube

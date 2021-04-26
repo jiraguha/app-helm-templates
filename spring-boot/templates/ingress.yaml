@@ -32,7 +32,7 @@ spec:
         paths:
           - backend:
               serviceName: {{ $serviceName }}
-              servicePort: 6565
+              servicePort: {{ .Values.grpc.port }}
  {{- end }}
 
 ---

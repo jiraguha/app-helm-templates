@@ -15,7 +15,7 @@ spec:
     - port: 6565
       name: grpc
       protocol: TCP
-      targetPort: 6565
+      targetPort: grpc
   selector:
     app.kubernetes.io/name: {{ include "spring-boot.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -27,15 +27,15 @@ metadata:
   name: {{ include "spring-boot.gprc-ingress-name" . }}
   namespace: kong
   annotations:
-    konghq.com/protocol: grpcs
+    konghq.com/protocol: grpc
 spec:
   type: ExternalName
   externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
   ports:
-    - port: 8080
+    - port: {{ .Values.grpc.port }}
       name: high
       protocol: TCP
-      targetPort: 6565
+      targetPort: {{ .Values.grpc.port }}
 {{- end}}
 ---
 {{- if .Values.ingress.http.enabled -}}
