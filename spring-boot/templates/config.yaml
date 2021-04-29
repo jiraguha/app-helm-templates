@@ -30,7 +30,7 @@ data:
         - "io.joinupy"
     logging:
       level:
-        root: INFO
+        root: {{.Values.loglLevel}}
 kind: ConfigMap
 metadata:
   labels:

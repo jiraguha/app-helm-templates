@@ -18,6 +18,7 @@ restartPolicy: Always
 fullnameOverride: ""
 
 skaffoldEnabled: false
+loglLevel: INFO
 enableDefaultConfig: true
 
 service:
