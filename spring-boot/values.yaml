@@ -18,7 +18,10 @@ restartPolicy: Always
 fullnameOverride: ""
 
 skaffoldEnabled: false
-loglLevel: INFO
+loglLevel:
+  root: INFO
+  packages: {}
+
 enableDefaultConfig: true
 
 service:

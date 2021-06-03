@@ -32,7 +32,10 @@ data:
         - "io.joinupy"
     logging:
       level:
-        root: {{.Values.loglLevel}}
+        root: {{.Values.loglLevel.root}}
+    {{- if .Values.loglLevel.packages}}
+{{  toYaml .Values.loglLevel.packages | indent 8 }}
+    {{- end}}
 kind: ConfigMap
 metadata:
   labels:
