@@ -34,7 +34,7 @@ grpc:
 
 ingress:
   http:
-    enabled: true
+    enabled: false
 #    nameOverride: ""
   grpc:
     enabled: false
