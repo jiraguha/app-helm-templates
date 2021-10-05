@@ -1,3 +1,4 @@
+{{- if .Values.internalConfig }}
 apiVersion: v1
 data:
   application-kube.yml: |-
@@ -42,3 +43,4 @@ metadata:
     name: {{ .Values.appName }}-config-prop
   name: {{ .Values.appName }}-config-prop
   namespace: {{ .Values.namespace }}
+{{- end }}

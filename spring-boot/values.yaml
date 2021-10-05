@@ -23,6 +23,7 @@ loglLevel:
   packages: {}
 
 enableDefaultConfig: true
+internalConfig: true
 
 service:
   type: ClusterIP
