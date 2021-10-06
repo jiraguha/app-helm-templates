@@ -23,6 +23,7 @@ loglLevel:
   packages: {}
 
 enableDefaultConfig: true
+# Ability to manage the app configmap outside this chart
 internalConfig: true
 
 service:
