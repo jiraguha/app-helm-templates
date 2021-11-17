@@ -11,6 +11,9 @@ metadata:
     konghq.com/strip-path: {{.Values.stripPath}}
     #    konghq.com/plugins: httpbin-auth
     {{- if .Values.httpsOnly }}
+    {{- if .Values..methods }}
+    konghq.com/methods: {{ .Values.methods }}
+    {{- end}}
     konghq.com/override: https-only
     {{- end }}
     kubernetes.io/tls-acme: "true"
