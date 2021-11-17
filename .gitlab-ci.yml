@@ -23,7 +23,7 @@ publish-hello:
   script:
     - cd hello
     - helm package . --version $CI_COMMIT_REF_SLUG
-    - helm push . upy_default
+    - helm push cm-push . --version $CI_COMMIT_REF_SLUG upy_default
   only:
     refs:
       - tags
@@ -33,7 +33,7 @@ publish-services-dependency:
   script:
     - cd services-dependency
     - helm package . --version $CI_COMMIT_REF_SLUG
-    - helm push . upy_default
+    - helm push cm-push . --version $CI_COMMIT_REF_SLUG upy_default
   only:
     refs:
       - tags
@@ -43,7 +43,7 @@ publish-spring:
   script:
     - cd spring-boot
     - helm package . --version $CI_COMMIT_REF_SLUG
-    - helm push . upy_default
+    - helm push cm-push . --version $CI_COMMIT_REF_SLUG upy_default
   only:
     refs:
       - tags
@@ -53,7 +53,7 @@ publish-dns:
   script:
     - cd dns
     - helm package . --version $CI_COMMIT_REF_SLUG
-    - helm push . upy_default
+    - helm push cm-push . --version $CI_COMMIT_REF_SLUG upy_default
   only:
     refs:
       - tags
