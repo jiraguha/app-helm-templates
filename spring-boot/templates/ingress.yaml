@@ -53,6 +53,9 @@ metadata:
     konghq.com/override: https-only
     {{- end }}
     kubernetes.io/tls-acme: "true"
+    {{- if .Values.ingress.http.methods }}
+    konghq.com/methods: {{ .Values.ingress.http.methods }}
+    {{- end}}
     cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
     kubernetes.io/ingress.class: kong
     {{- if .Values.ingress.externalDnsEnabled }}
