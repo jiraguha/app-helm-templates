@@ -1,0 +1,22 @@
+{{- range .Values.sevices }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ . }}
+  namespace: {{ $.Values.namespace }}
+  annotations:
+    konghq.com/protocol: grpc
+spec:
+  type: ExternalName
+  externalName: {{ . }}.{{ $.Values.targetNamespace }}.svc.cluster.local
+  ports:
+    - port: {{ $.Values.port.http }}
+      targetPort: {{ $.Values.port.http }}
+      name: http
+      protocol: TCP
+    - port: {{ $.Values.port.grpc }}
+      targetPort: {{ $.Values.port.grpc }}
+      name: grpc
+      protocol: TCP
+{{- end }}

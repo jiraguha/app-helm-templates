@@ -1,0 +1,9 @@
+# Default values for spring-boot.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+namespace: apps-sandbox
+targetNamespace: apps-master
+port:
+    grpc: 6565
+    http: 80
+sevices: []
