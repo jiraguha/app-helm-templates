@@ -22,18 +22,27 @@ publish-hello:
   stage: publish
   script:
     - cd hello
-    - helm package .
+    - helm package . --version $CI_COMMIT_REF_SLUG
     - helm push . upy_default
   only:
     refs:
       - tags
 
+publish-services-dependency:
+  stage: publish
+  script:
+    - cd services-dependency
+    - helm package . --version $CI_COMMIT_REF_SLUG
+    - helm push . upy_default
+  only:
+    refs:
+      - tags
 
 publish-spring:
   stage: publish
   script:
     - cd spring-boot
-    - helm package .
+    - helm package . --version $CI_COMMIT_REF_SLUG
     - helm push . upy_default
   only:
     refs:
@@ -43,7 +52,7 @@ publish-dns:
   stage: publish
   script:
     - cd dns
-    - helm package .
+    - helm package . --version $CI_COMMIT_REF_SLUG
     - helm push . upy_default
   only:
     refs:
