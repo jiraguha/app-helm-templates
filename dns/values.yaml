@@ -7,7 +7,7 @@ appName: spring-demo
 
 enabled: false
 annotations: {}
-# methods: ""
+# methods: '"GET"'
 stripPath: '"true"'
 httpsOnly: true
 externalDnsEnabled: true
