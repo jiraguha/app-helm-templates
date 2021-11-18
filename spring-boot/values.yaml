@@ -37,7 +37,7 @@ grpc:
 ingress:
   http:
     enabled: true
-    methods: "POST"
+#     methods: "POST"
 #    nameOverride: ""
   grpc:
     enabled: true
