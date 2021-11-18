@@ -6,9 +6,9 @@ data:
       port: {{.Values.grpc.port}}
       enable-reflection: {{.Values.grpc.enableReflection}}
     spring:
-      profiles:
       application:
         name: {{.Values.appName}}
+      profiles:
         active: kube
         include: default
       config:

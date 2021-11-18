@@ -36,11 +36,11 @@ grpc:
 
 ingress:
   http:
-    enabled: false
-#     methods: ""
+    enabled: true
+    methods: "POST"
 #    nameOverride: ""
   grpc:
-    enabled: false
+    enabled: true
   #    nameOverride: ""
   annotations: { }
   stripPath: '"true"'
