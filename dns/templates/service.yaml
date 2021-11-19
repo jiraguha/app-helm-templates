@@ -1,13 +1,15 @@
+{{- $httpService := include "dns.http-seviceName" . -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "dns.fullname" . }}
-  namespace: kong
+    name: {{ $httpService }}
+    namespace: kong
 spec:
-  type: ExternalName
-  externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
-  ports:
-    - port: {{ .Values.port }}
-      name: low
-      protocol: TCP
-      targetPort: {{ .Values.targetPort }}
+    type: ExternalName
+    externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
+    ports:
+        - port: {{ .Values.port  }}
+          name: http
+          protocol: TCP
+          targetPort: {{ .Values.targetPort  }}
+

@@ -1,10 +1,12 @@
+{{- $grpcUrl := include "spring-boot.grpc-url" . -}}
+{{- $grpcSecret := include "spring-boot.grpc-ssl-secret" . -}}
+{{- $grpcService := include "spring-boot.grpc-seviceName" . -}}
 {{- if .Values.ingress.grpc.enabled  -}}
-{{- $serviceName := include "spring-boot.gprc-ingress-name" . -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   namespace: kong
-  name: {{ $serviceName }}
+  name: {{ $grpcService }}
   annotations:
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
@@ -19,30 +21,50 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
     kubernetes.io/ingress.class: kong
     {{- if .Values.ingress.externalDnsEnabled }}
-    external-dns.alpha.kubernetes.io/hostname: {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
+    external-dns.alpha.kubernetes.io/hostname: {{ $grpcUrl }}
   {{- end }}
 spec:
   tls:
-    - secretName: {{ $serviceName }}-joinupy-io
+    - secretName: {{ $grpcSecret }}
       hosts:
-        - {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
+        - {{ $grpcUrl }}
   rules:
-    - host: {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
+    - host: {{ $grpcUrl }}
       http:
         paths:
           - backend:
-              serviceName: {{ $serviceName }}
+              serviceName: {{ $grpcService }}
               servicePort: {{ .Values.grpc.port }}
- {{- end }}
-
 ---
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ $grpcService }}
+    namespace: kong
+    annotations:
+        konghq.com/protocol: grpc
+spec:
+    type: ExternalName
+    externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
+    ports:
+        - port: {{ .Values.grpc.port }}
+          name: high
+          protocol: TCP
+          targetPort: {{ .Values.grpc.port }}
+
+{{- end}}
+---
+
+{{- $httpUrl := include "spring-boot.http-url" . -}}
+{{- $httpSecret := include "spring-boot.http-ssl-secret" . -}}
+{{- $httpService := include "spring-boot.http-seviceName" . -}}
 {{- if .Values.ingress.http.enabled -}}
-{{- $serviceName := include "spring-boot.http-ingress-name" . -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   namespace: kong
-  name: {{ $serviceName }}
+  name: {{ $httpService }}
   annotations:
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
@@ -59,18 +81,34 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
     kubernetes.io/ingress.class: kong
     {{- if .Values.ingress.externalDnsEnabled }}
-    external-dns.alpha.kubernetes.io/hostname: {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
+    external-dns.alpha.kubernetes.io/hostname: {{ $httpUrl }}
   {{- end }}
 spec:
   tls:
-    - secretName: {{ $serviceName }}-joinupy-io
+    - secretName: {{ $httpSecret }}
       hosts:
-        - {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
+        - {{ $httpUrl }}
   rules:
-    - host: {{ $serviceName }}.service.{{ .Values.environment }}.joinupy.io
+    - host: {{ $httpUrl}}
       http:
         paths:
           - backend:
-              serviceName: {{ $serviceName }}
+              serviceName: {{ $httpService }}
               servicePort: 80
-{{- end }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ $httpService }}
+    namespace: kong
+spec:
+    type: ExternalName
+    externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
+    ports:
+        - port: 80
+          name: http
+          protocol: TCP
+          targetPort: 80
+
+{{- end}}

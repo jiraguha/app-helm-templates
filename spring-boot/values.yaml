@@ -2,7 +2,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 environment: tests
+mainDnsDomain: joinupy.io
 namespace: default
+
 appName: spring-demo
 replicaCount: 2
 image:
@@ -35,10 +37,12 @@ grpc:
   enableReflection: false
 
 ingress:
+  isNamespaced: true
+  postfix: service
   http:
     enabled: false
 #     methods: "POST"
-#    nameOverride: ""
+#     nameOverride: ""
   grpc:
     enabled: false
   #    nameOverride: ""

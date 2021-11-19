@@ -44,36 +44,72 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 {{- end }}
 
-
-{{- define "spring-boot.http-label" -}}
-{{- if and .Values.ingress.http.enabled .Values.ingress.grpc.enabled }}
-{{- include "spring-boot.fullname" . -}}{{- printf "-http" }}
+{{- define "spring-boot.ingress-namesapce-label" -}}
+{{- if .Values.ingress.isNamespaced }}
+{{- printf "-" }}{{- .Values.namespace }}
 {{- else }}
-{{- include "spring-boot.fullname" . -}}
+{{- printf "" }}
 {{- end }}
 {{- end }}
 
-{{- define "spring-boot.grpc-label" -}}
-{{- if and .Values.ingress.grpc.enabled .Values.ingress.http.enabled }}
-{{- include "spring-boot.fullname" . -}}{{- printf "-grpc" }}
+{{- define "spring-boot.ingress-namesapce-postfix" -}}
+{{- if .Values.ingress.isNamespaced }}
+{{- .Values.namespace }}{{- printf "." -}}
 {{- else }}
-{{- include "spring-boot.fullname" . -}}
+{{- printf "" }}
 {{- end }}
 {{- end }}
 
+{{- define "spring-boot.ingress-component-postfix" -}}
+{{- if .Values.ingress.postfix }}
+{{- .Values.ingress.postfix }}{{- printf "." -}}
+{{- else }}
+{{- printf "" }}
+{{- end }}
+{{- end }}
 
-{{- define "spring-boot.http-ingress-name" -}}
+{{- define "spring-boot.full-end-url" -}}
+{{- include "spring-boot.ingress-component-postfix" . -}}{{- include "spring-boot.ingress-namesapce-postfix" . -}}{{ .Values.environment -}}.{{- .Values.mainDnsDomain }}
+{{- end }}
+
+{{- define "spring-boot.http-full-url" -}}
+{{- printf "http" -}}.{{- include "spring-boot.fullname" . -}}.{{- include "spring-boot.full-end-url" . -}}
+{{- end }}
+
+{{- define "spring-boot.grpc-full-url" -}}
+{{- printf "grpc" -}}.{{- include "spring-boot.fullname" . -}}.{{- include "spring-boot.full-end-url" . -}}
+{{- end }}
+
+
+{{- define "spring-boot.http-url" -}}
 {{- if .Values.ingress.http.nameOverride}}
-{{- .Values.ingress.http.nameOverride}}
+{{- .Values.ingress.http.nameOverride -}}.{{- include "spring-boot.full-end-url" . -}}
 {{- else }}
-{{- include "spring-boot.http-label" . -}}
+{{- include "spring-boot.http-full-url" . -}}
 {{- end }}
 {{- end }}
 
-{{- define "spring-boot.gprc-ingress-name" -}}
+{{- define "spring-boot.grpc-url" -}}
 {{- if .Values.ingress.grpc.nameOverride}}
-{{- .Values.ingress.grpc.nameOverride}}
+{{- .Values.ingress.grpc.nameOverride -}}{{- include "spring-boot.full-end-url" . -}}
 {{- else }}
-{{- include "spring-boot.grpc-label" . -}}
+{{- include "spring-boot.grpc-full-url" . -}}
 {{- end }}
+{{- end }}
+
+
+{{- define "spring-boot.grpc-seviceName" -}}
+ grpc-{{ include "spring-boot.fullname" .  }}{{ include "spring-boot.ingress-namesapce-label" .  }}
+{{- end }}
+
+{{- define "spring-boot.http-seviceName" -}}
+ http-{{ include "spring-boot.fullname" .  }}{{ include "spring-boot.ingress-namesapce-label" .  }}
+{{- end }}
+
+{{- define "spring-boot.http-ssl-secret" -}}
+ {{ regexReplaceAll "\\W+" (include "spring-boot.http-url" .) "-" }}
+{{- end }}
+
+{{- define "spring-boot.grpc-ssl-secret" -}}
+ {{ regexReplaceAll "\\W+" (include "spring-boot.grpc-url" .) "-" }}
 {{- end }}

@@ -1,36 +1,38 @@
-{{- $fullName := include "dns.fullname" . -}}
+{{- $httpUrl := include "dns.http-full-url" . -}}
+{{- $httpSecret := include "dns.http-ssl-secret" . -}}
+{{- $httpService := include "dns.http-seviceName" . -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   namespace: kong
-  name: {{ $fullName }}
+  name: {{ $httpService }}
   annotations:
     {{- with .Values.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
     konghq.com/strip-path: {{.Values.stripPath}}
-    {{- if .Values.methods }}
-    konghq.com/methods: {{ .Values.methods }}
-    {{- end}}
+    #    konghq.com/plugins: httpbin-auth
     {{- if .Values.httpsOnly }}
     konghq.com/override: https-only
     {{- end }}
     kubernetes.io/tls-acme: "true"
+    {{- if .Values.methods }}
+    konghq.com/methods: {{ .Values.methods }}
+    {{- end}}
     cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
     kubernetes.io/ingress.class: kong
     {{- if .Values.externalDnsEnabled }}
-    external-dns.alpha.kubernetes.io/hostname: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+    external-dns.alpha.kubernetes.io/hostname: {{ $httpUrl }}
   {{- end }}
 spec:
   tls:
-    - secretName: {{ $fullName }}-joinupy-io
+    - secretName: {{ $httpSecret }}
       hosts:
-        - {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+        - {{ $httpUrl }}
   rules:
-    - host: {{ $fullName }}.service.{{ .Values.environment }}.joinupy.io
+    - host: {{ $httpUrl}}
       http:
         paths:
-          - path: /
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ .Values.port }}
+          - backend:
+              serviceName: {{ $httpService }}
+              servicePort: {{ .Values.port  }}

@@ -1,11 +1,10 @@
 # Default values for spring-boot.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+mainDnsDomain: joinupy.io
 environment: tests
 namespace: default
 appName: spring-demo
-
-enabled: false
 annotations: {}
 # methods: '"GET"'
 stripPath: '"true"'
@@ -13,4 +12,4 @@ httpsOnly: true
 externalDnsEnabled: true
 port: 433
 targetPort: 433
-#nameOverride: ""
+postfix: service
