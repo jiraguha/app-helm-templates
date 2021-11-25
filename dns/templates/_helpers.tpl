@@ -15,16 +15,16 @@ If release name contains chart name it will be used as a full name.
 {{- .Values.appName -}}
 {{- end -}}
 
-{{- define "dns.ingress-component-postfix" -}}
-{{- if .Values.postfix }}
-{{- .Values.postfix }}{{- printf "." -}}
+{{- define "dns.ingress-component-prefix" -}}
+{{- if .Values.prefix }}
+{{- .Values.prefix }}{{- printf "." -}}
 {{- else }}
 {{- printf "" }}
 {{- end }}
 {{- end }}
 
 {{- define "dns.full-end-url" -}}
-{{- include "dns.ingress-component-postfix" . -}}{{- .Values.environment -}}.{{- .Values.mainDnsDomain -}}
+{{- include "dns.ingress-component-prefix" . -}}{{- .Values.environment -}}.{{- .Values.mainDnsDomain -}}
 {{- end }}
 
 {{- define "dns.http-full-url" -}}

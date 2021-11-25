@@ -12,4 +12,4 @@ httpsOnly: true
 externalDnsEnabled: true
 port: 433
 targetPort: 433
-postfix: service
+prefix: service
