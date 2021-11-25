@@ -52,7 +52,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 {{- end }}
 
-{{- define "spring-boot.ingress-namesapce-postfix" -}}
+{{- define "spring-boot.ingress-namesapce-prefix" -}}
 {{- if .Values.ingress.isNamespaced }}
 {{- .Values.namespace }}{{- printf "." -}}
 {{- else }}
@@ -60,24 +60,32 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 {{- end }}
 
-{{- define "spring-boot.ingress-component-postfix" -}}
-{{- if .Values.ingress.postfix }}
-{{- .Values.ingress.postfix }}{{- printf "." -}}
+{{- define "spring-boot.ingress-component-http-prefix" -}}
+{{- if .Values.ingress.http.prefix }}
+{{- .Values.ingress.http.prefix }}{{- printf "." -}}
+{{- else }}
+{{- printf "" }}
+{{- end }}
+{{- end }}
+
+{{- define "spring-boot.ingress-component-grpc-prefix" -}}
+{{- if .Values.ingress.grpc.prefix }}
+{{- .Values.ingress.grpc.prefix }}{{- printf "." -}}
 {{- else }}
 {{- printf "" }}
 {{- end }}
 {{- end }}
 
 {{- define "spring-boot.full-end-url" -}}
-{{- include "spring-boot.ingress-component-postfix" . -}}{{- include "spring-boot.ingress-namesapce-postfix" . -}}{{ .Values.environment -}}.{{- .Values.mainDnsDomain }}
+{{- include "spring-boot.ingress-namesapce-prefix" . -}}{{ .Values.environment -}}.{{- .Values.mainDnsDomain }}
 {{- end }}
 
 {{- define "spring-boot.http-full-url" -}}
-{{- printf "http" -}}.{{- include "spring-boot.fullname" . -}}.{{- include "spring-boot.full-end-url" . -}}
+{{- printf "http" -}}.{{- include "spring-boot.fullname" . -}}.{{include "spring-boot.ingress-component-http-prefix" .}}{{- include "spring-boot.full-end-url" . -}}
 {{- end }}
 
 {{- define "spring-boot.grpc-full-url" -}}
-{{- printf "grpc" -}}.{{- include "spring-boot.fullname" . -}}.{{- include "spring-boot.full-end-url" . -}}
+{{- printf "grpc" -}}.{{- include "spring-boot.fullname" . -}}.{{include "spring-boot.ingress-component-grpc-prefix" .}}{{- include "spring-boot.full-end-url" . -}}
 {{- end }}
 
 
@@ -91,9 +99,9 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 {{- define "spring-boot.grpc-url" -}}
 {{- if .Values.ingress.grpc.nameOverride}}
-{{- .Values.ingress.grpc.nameOverride -}}{{- include "spring-boot.full-end-url" . -}}
+{{- .Values.ingress.grpc.nameOverride -}}.{{- include "spring-boot.full-end-url" . -}}
 {{- else }}
-{{- include "spring-boot.grpc-full-url" . -}}
+{{- printf "%s.%s.%s" "grpc" .Values.ingress.grpc.prefix (include "spring-boot.full-end-url" .) -}}
 {{- end }}
 {{- end }}
 
@@ -107,9 +115,31 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{- define "spring-boot.http-ssl-secret" -}}
- {{ regexReplaceAll "\\W+" (include "spring-boot.http-url" .) "-" }}
+ {{ regexReplaceAll "\\W+" (include "spring-boot.http-url" .) "-" -}}
 {{- end }}
 
 {{- define "spring-boot.grpc-ssl-secret" -}}
- {{ regexReplaceAll "\\W+" (include "spring-boot.grpc-url" .) "-" }}
+ {{ regexReplaceAll "\\W+" (include "spring-boot.grpc-url" .) "-" -}}
 {{- end }}
+
+
+{{- define "spring-boot.proto-prefix" -}}
+{{-   regexReplaceAll "\\-" (include "spring-boot.fullname" .) "" -}}
+{{- end -}}
+
+{{- define "spring-boot.proto-service" -}}
+{{-  regexReplaceAll "-service" (include "spring-boot.fullname" .)  "" | camelcase | title | printf "%sProtoService" -}}
+{{- end -}}
+
+
+{{- define "spring-boot.proto-default-full-path" -}}
+{{- printf "%s.%s" (include "spring-boot.proto-default-path" .)    (include "spring-boot.proto-service" .) -}}
+{{- end -}}
+
+{{- define "spring-boot.proto-default-path" -}}
+{{- if .Values.ingress.grpc.exposition.pathOverride}}
+{{- .Values.ingress.grpc.exposition.pathOverride -}}
+{{- else }}
+{{- printf "%s.%s" .Values.protoPackage  (include "spring-boot.proto-prefix" .) -}}
+{{- end }}
+{{- end -}}

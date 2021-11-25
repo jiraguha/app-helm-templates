@@ -3,6 +3,7 @@
 # Declare variables to be passed into your templates.
 environment: tests
 mainDnsDomain: joinupy.io
+protoPackage: io.joinupy.web
 namespace: default
 
 appName: spring-demo
@@ -38,14 +39,20 @@ grpc:
 
 ingress:
   isNamespaced: true
-  postfix: service
   http:
+    prefix: service
     enabled: false
 #     methods: "POST"
 #     nameOverride: ""
   grpc:
+    prefix: services
     enabled: false
-  #    nameOverride: ""
+    nameOverride: ""
+    exposition:
+      pathOverride: ""
+      filters: []
+#        - io.joinupy.web.userservice.UserProtoService
+#        - io.joinupy.web.userservice.MoneyProtoService
   annotations: { }
   stripPath: '"true"'
 #  fixme: true by default

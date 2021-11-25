@@ -1,6 +1,7 @@
 {{- $grpcUrl := include "spring-boot.grpc-url" . -}}
 {{- $grpcSecret := include "spring-boot.grpc-ssl-secret" . -}}
 {{- $grpcService := include "spring-boot.grpc-seviceName" . -}}
+{{- $grpcPort := .Values.grpc.port -}}
 {{- if .Values.ingress.grpc.enabled  -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -32,9 +33,19 @@ spec:
     - host: {{ $grpcUrl }}
       http:
         paths:
-          - backend:
+          {{- if .Values.ingress.grpc.exposition.filters }}
+          {{- range .Values.ingress.grpc.exposition.filters }}
+          - path: /{{ . }}
+            backend:
               serviceName: {{ $grpcService }}
-              servicePort: {{ .Values.grpc.port }}
+              servicePort: {{ $grpcPort }}
+          {{- end }}
+          {{- else}}
+          - path: /{{ include "spring-boot.proto-default-full-path" .}}/
+            backend:
+              serviceName: {{ $grpcService }}
+              servicePort: {{ $grpcPort }}
+          {{- end }}
 ---
 
 apiVersion: v1
