@@ -4,7 +4,7 @@
 environment: tests
 mainDnsDomain: joinupy.io
 protoPackage: io.joinupy.web
-namespace: default
+namespace: apps-master
 
 appName: spring-demo
 replicaCount: 2
@@ -41,7 +41,7 @@ ingress:
   isNamespaced: true
   http:
     prefix: service
-    enabled: false
+    enabled: true
 #     methods: "POST"
 #     nameOverride: ""
   grpc:

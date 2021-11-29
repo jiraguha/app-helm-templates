@@ -46,7 +46,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 {{- define "spring-boot.ingress-namesapce-label" -}}
 {{- if .Values.ingress.isNamespaced }}
-{{- printf "-" }}{{- .Values.namespace }}
+{{- printf "-" }}{{- replace "apps-" "" .Values.namespace  }}
 {{- else }}
 {{- printf "" }}
 {{- end }}
@@ -54,7 +54,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 {{- define "spring-boot.ingress-namesapce-prefix" -}}
 {{- if .Values.ingress.isNamespaced }}
-{{- .Values.namespace }}{{- printf "." -}}
+{{- replace "apps-" "" .Values.namespace  }}{{- printf "." -}}
 {{- else }}
 {{- printf "" }}
 {{- end }}
