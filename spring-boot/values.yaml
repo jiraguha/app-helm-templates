@@ -1,7 +1,8 @@
 # Default values for spring-boot.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-withProductionCertificate: true
+# letsencrypt-cluster-stage,  letsencrypt-cluster-prod, selfsigned-issuer
+certificateIssuer: ""
 environment: tests
 mainDnsDomain: joinupy.io
 protoPackage: io.joinupy.web

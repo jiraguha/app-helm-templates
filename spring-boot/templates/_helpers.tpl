@@ -146,9 +146,9 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 
 {{- define "spring-boot.cert-issuer" -}}
-{{- if .Values.withProductionCertificate }}
-{{- printf "letsencrypt-cluster-prod" -}}
+{{- if .Values.certificateIssuer }}
+{{- .Values.certificateIssuer -}}
 {{- else }}
-{{- printf "letsencrypt-cluster-stage" -}}
+{{- printf "letsencrypt-cluster-pro" -}}
 {{- end }}
 {{- end }}
