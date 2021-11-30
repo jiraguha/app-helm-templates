@@ -143,3 +143,12 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- printf "%s.%s" .Values.protoPackage  (include "spring-boot.proto-prefix" .) -}}
 {{- end }}
 {{- end -}}
+
+
+{{- define "spring-boot.cert-issuer" -}}
+{{- if .Values.withProductionCertificate }}
+{{- printf "letsencrypt-cluster-prod" -}}
+{{- else }}
+{{- printf "letsencrypt-cluster-stage" -}}
+{{- end }}
+{{- end }}
