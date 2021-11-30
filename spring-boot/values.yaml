@@ -41,7 +41,7 @@ ingress:
   isNamespaced: true
   http:
     prefix: service
-    enabled: true
+    enabled: false
 #     methods: "POST"
 #     nameOverride: ""
   grpc:
