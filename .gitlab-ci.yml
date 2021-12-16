@@ -1,4 +1,15 @@
 .helm_push_script: &helm_push_script |
+  _INFO(){
+    echo -e "[INFO] $1"
+  }
+
+  _ERROR(){
+    echo "[ERROR] $1" && exit 1
+  }
+
+  _WARNING(){
+    echo "[WARNING] $1"
+  }
   pushHelmTag(){
     currentDir=$(pwd)
     [ ! -d "$1" ] && echo "[ERROR] chart $1 does not exist" && exist 1
