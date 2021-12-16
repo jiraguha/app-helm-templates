@@ -68,4 +68,3 @@ publish-masters:
   only:
     refs:
       - master
-      - main
