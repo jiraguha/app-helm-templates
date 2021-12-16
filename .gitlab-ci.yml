@@ -1,59 +1,71 @@
-image:
-  name: registry.gitlab.com/join-up/cross-cutting/tools/codefresh:latest
-  entrypoint:
-    - '/usr/bin/env'
-    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-variables:
-  PLAN: plan.tfplan
-  JSON_PLAN_FILE: tfplan.json
-  GITLAB_TOKEN: $CI_BUILD_TOKEN
+.helm_push_script: &helm_push_script |
+  pushHelmTag(){
+    currentDir=$(pwd)
+    [ ! -d "$1" ] && echo "[ERROR] chart $1 does not exist" && exist 1
+    cd "$1" || exit
+    _INFO "Cleaning existing package..."
+    rm -f *.tgz
+    helm dependency update
+    _INFO "Packaging..."
+    helm package . --version $CI_COMMIT_REF_SLUG
+    _INFO "Pushing tag to private museum hosted by codefresh..."
+    helm cm-push --force . upy_default --version $CI_COMMIT_REF_SLUG
+    _INFO "Cleaning existing package..."
+    rm -f *.tgz
+    cd "$currentDir" || exit
+  }
 
-
-before_script:
-  - codefresh auth create-context --api-key $CODEFRESH_API_TOKEN
-  - helm repo add upy_public cm://h.cfcr.io/upy/public
-  - helm repo add upy_default cm://h.cfcr.io/upy/default
+  pushHelmMaster(){
+    currentDir=$(pwd)
+    [ ! -d "$1" ] && echo "[ERROR] chart $1 does not exist" && exist 1
+    _INFO "Cleaning existing package..."
+    rm -f *.tgz
+    cd "$1" || exit
+    helm dependency update
+    _INFO "Packaging..."
+    helm package . --version 0.0.0-$CI_COMMIT_REF_SLUG
+    _INFO "Pushing master to private museum hosted by codefresh..."
+    helm cm-push --force . upy_default --version 0.0.0-$CI_COMMIT_REF_SLUG
+    _INFO "Cleaning existing package..."
+    rm -f *.tgz
+    cd "$currentDir" || exit
+  }
+#
+.standard-helm-push: &standard-helm-push
+  image:
+    name: registry.gitlab.com/join-up/cross-cutting/tools/codefresh:latest
+    entrypoint:
+      - '/usr/bin/env'
+      - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+  stage: helm-push
+  before_script:
+    - codefresh auth create-context --api-key $CODEFRESH_API_TOKEN
+    - helm repo add upy_public cm://h.cfcr.io/upy/public
+    - helm repo add upy_default cm://h.cfcr.io/upy/default
+    - *helm_push_script
 
 stages:
   - publish
 
-
-publish-hello:
+publish-tags:
+  <<: *standard-helm-push
   stage: publish
   script:
-    - cd hello
-    - helm package . --version $CI_COMMIT_REF_SLUG
-    - helm push . upy_default --version $CI_COMMIT_REF_SLUG
+    - pushHelmTag dns
+    - pushHelmTag services-dependency
+    - pushHelmTag spring-boot
   only:
     refs:
       - tags
 
-publish-services-dependency:
+publish-masters:
+  <<: *standard-helm-push
   stage: publish
   script:
-    - cd services-dependency
-    - helm package . --version $CI_COMMIT_REF_SLUG
-    - helm push . upy_default --version $CI_COMMIT_REF_SLUG
+    - pushHelmMaster dns
+    - pushHelmMaster services-dependency
+    - pushHelmMaster spring-boot
   only:
     refs:
-      - tags
-
-publish-spring:
-  stage: publish
-  script:
-    - cd spring-boot
-    - helm package . --version $CI_COMMIT_REF_SLUG
-    - helm push . upy_default --version $CI_COMMIT_REF_SLUG
-  only:
-    refs:
-      - tags
-
-publish-dns:
-  stage: publish
-  script:
-    - cd dns
-    - helm package . --version $CI_COMMIT_REF_SLUG
-    - helm push . upy_default --version $CI_COMMIT_REF_SLUG
-  only:
-    refs:
-      - tags
+      - master
+      - main

@@ -149,6 +149,6 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- if .Values.certificateIssuer }}
 {{- .Values.certificateIssuer -}}
 {{- else }}
-{{- printf "letsencrypt-cluster-pro" -}}
+{{- printf "letsencrypt-cluster-prod" -}}
 {{- end }}
 {{- end }}
