@@ -8,14 +8,20 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.http.port }}
       targetPort: http
       protocol: TCP
       name: http
-    - port: 6565
+    - port: {{ .Values.grpc.port }}
       name: grpc
       protocol: TCP
       targetPort: grpc
+    {{- if .Values.rsocket.port }}
+    - port: {{ .Values.rsocket.port }}
+      name: rsocket
+      protocol: TCP
+      targetPort: rsocket
+    {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "spring-boot.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

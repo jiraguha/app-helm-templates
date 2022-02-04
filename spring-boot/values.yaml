@@ -31,9 +31,16 @@ enableDefaultConfig: true
 # Ability to manage the app configmap outside this chart
 internalConfig: true
 
+# Deprecated
 service:
   type: ClusterIP
   port: 80
+
+rsocket:
+  port: 7000
+
+http:
+  port: 8080
 
 grpc:
   port: 6565
