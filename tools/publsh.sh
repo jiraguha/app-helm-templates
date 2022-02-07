@@ -31,12 +31,14 @@ push(){
     rm *.tgz
     cd "$currentDir"
 }
+pushMaster hello
 pushMaster dns
 pushMaster spring-boot
 pushMaster services-dependency
 
-export CI_COMMIT_REF_SLUG=0.5.1
+export CI_COMMIT_REF_SLUG=0.5.0
 
+pushTag hello
 pushTag dns
 pushTag spring-boot
 pushTag services-dependency

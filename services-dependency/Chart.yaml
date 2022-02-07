@@ -1,7 +1,7 @@
 apiVersion: v2
 appVersion: "0.1.0"
-description: services dependency
-name: services-dependency
+description: upy spring application
+name: spring-boot
 version: 0.3.3
 home: https://gitlab.com/join-up/cross-cutting/helm/app-templates.git
 keywords:
