@@ -65,6 +65,7 @@ publish-tags:
     - pushHelmTag dns
     - pushHelmTag services-dependency
     - pushHelmTag spring-boot
+    - pushHelmTag ktor
   only:
     refs:
       - tags
@@ -76,6 +77,7 @@ publish-masters:
     - pushHelmMaster dns
     - pushHelmMaster services-dependency
     - pushHelmMaster spring-boot
+    - pushHelmMaster ktor
   only:
     refs:
       - master
