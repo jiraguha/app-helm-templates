@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ktor.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+{{ include "ktor.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "ktor.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        forcedRef: {{ .Values.image.ref }}
+        app.kubernetes.io/name: {{ include "ktor.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: {{.Values.restartPolicy}}
+      volumes:
+        - configMap:
+            name: {{ .Values.appName }}-config-prop
+          name: application-kube
+      containers:
+        - name: {{ .Values.appName }}
+          image: "{{ include "ktor.image" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- $enableDefaultConfig := .Values.enableDefaultConfig }}
+          {{- with .Values.container}}
+          {{- if or (or .environment .secrets) (and .defaultSecrets $enableDefaultConfig) }}
+          env:
+            {{- range $key, $value := .environment }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- if and .defaultSecrets $enableDefaultConfig }}
+            {{- range .defaultSecrets }}
+            {{- $secretName := .name }}
+            {{- range $key, $value :=  .env }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+            {{- if .secrets }}
+            {{- range .secrets }}
+            {{- $secretName := .name }}
+            {{- range $key, $value := .env }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: grpc
+              containerPort: {{ .Values.grpc.port }}
+              protocol: TCP
+           {{- if .Values.rsocket.port }}
+            - name: rsocket
+              containerPort: {{ .Values.rsocket.port }}
+              protocol: TCP
+           {{- end  }}
+          ## application-kube
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          {{- if .Values.livenessProbe }}
+          livenessProbe:
+{{ toYaml .Values.livenessProbe | indent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe }}
+          readinessProbe:
+{{ toYaml .Values.readinessProbe | indent 12 }}
+          {{- end }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+  {{- end }}

@@ -1,0 +1,10 @@
+apiVersion: v2
+appVersion: "0.1.0"
+description: upy ktor application
+name: ktor
+version: 0.3.3
+home: https://gitlab.com/join-up/cross-cutting/helm/app-templates.git
+keywords:
+  - ktor
+maintainers:
+  - name: jpiraguha

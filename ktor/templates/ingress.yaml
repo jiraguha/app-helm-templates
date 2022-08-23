@@ -1,0 +1,125 @@
+{{- $grpcUrl := include "ktor.grpc-url" . -}}
+{{- $grpcSecret := include "ktor.grpc-ssl-secret" . -}}
+{{- $grpcService := include "ktor.grpc-seviceName" . -}}
+{{- $grpcPort := .Values.grpc.port -}}
+{{- if .Values.ingress.grpc.enabled  -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  namespace: kong
+  name: {{ $grpcService }}
+  annotations:
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    konghq.com/strip-path: {{.Values.ingress.stripPath}}
+    #    konghq.com/plugins: httpbin-auth
+    {{- if .Values.ingress.httpsOnly }}
+    konghq.com/override: https-only
+    {{- end }}
+    konghq.com/protocols: grpc,grpcs
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: {{ include "ktor.cert-issuer" . }}
+    kubernetes.io/ingress.class: kong
+    {{- if .Values.ingress.externalDnsEnabled }}
+    external-dns.alpha.kubernetes.io/hostname: {{ $grpcUrl }}
+  {{- end }}
+spec:
+  tls:
+    - secretName: {{ $grpcSecret }}
+      hosts:
+        - {{ $grpcUrl }}
+  rules:
+    - host: {{ $grpcUrl }}
+      http:
+        paths:
+          {{- if .Values.ingress.grpc.exposition.filters }}
+          {{- range .Values.ingress.grpc.exposition.filters }}
+          - path: /{{ . }}
+            backend:
+              serviceName: {{ $grpcService }}
+              servicePort: {{ $grpcPort }}
+          {{- end }}
+          {{- else}}
+          - path: /{{ include "ktor.proto-default-full-path" .}}/
+            backend:
+              serviceName: {{ $grpcService }}
+              servicePort: {{ $grpcPort }}
+          {{- end }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ $grpcService }}
+    namespace: kong
+    annotations:
+        konghq.com/protocol: grpc
+spec:
+    type: ExternalName
+    externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
+    ports:
+        - port: {{ .Values.grpc.port }}
+          name: high
+          protocol: TCP
+          targetPort: {{ .Values.grpc.port }}
+
+{{- end}}
+---
+
+{{- $httpUrl := include "ktor.http-url" . -}}
+{{- $httpSecret := include "ktor.http-ssl-secret" . -}}
+{{- $httpService := include "ktor.http-seviceName" . -}}
+{{- if .Values.ingress.http.enabled -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  namespace: kong
+  name: {{ $httpService }}
+  annotations:
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    konghq.com/strip-path: {{.Values.ingress.stripPath}}
+    #    konghq.com/plugins: httpbin-auth
+    {{- if .Values.ingress.httpsOnly }}
+    konghq.com/override: https-only
+    {{- end }}
+    kubernetes.io/tls-acme: "true"
+    {{- if .Values.ingress.http.methods }}
+    konghq.com/methods: {{ .Values.ingress.http.methods }}
+    {{- end}}
+    cert-manager.io/cluster-issuer: {{ include "ktor.cert-issuer" . }}
+    kubernetes.io/ingress.class: kong
+    {{- if .Values.ingress.externalDnsEnabled }}
+    external-dns.alpha.kubernetes.io/hostname: {{ $httpUrl }}
+  {{- end }}
+spec:
+  tls:
+    - secretName: {{ $httpSecret }}
+      hosts:
+        - {{ $httpUrl }}
+  rules:
+    - host: {{ $httpUrl}}
+      http:
+        paths:
+          - backend:
+              serviceName: {{ $httpService }}
+              servicePort: 80
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ $httpService }}
+    namespace: kong
+spec:
+    type: ExternalName
+    externalName: {{ .Values.appName }}.{{ .Values.namespace }}.svc.cluster.local
+    ports:
+        - port: 80
+          name: http
+          protocol: TCP
+          targetPort: 80
+
+{{- end}}
