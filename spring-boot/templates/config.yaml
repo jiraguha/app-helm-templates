@@ -13,6 +13,9 @@ data:
         include: default
       config:
         use-legacy-processing: true
+      zipkin:
+        enabled: ${ZIPKIN_ENABLED:true}
+        baseUrl: ${ZIPKIN_URL:}
     {{- if .Values.enableDefaultConfig}}
       data:
         mongodb:
