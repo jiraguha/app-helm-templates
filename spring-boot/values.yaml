@@ -99,6 +99,10 @@ container:
         KAFKA_USER: user
         KAFKA_USER_INFO: userInfo
         KAFKA_REGISTRY_URL: registryUrl
+    - name: monitoring
+      env:
+        ZIPKIN_URL: zipkinUrl
+        ZIPKIN_ENABLED: zipkinEnabled
 
 
 resources: { }
