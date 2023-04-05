@@ -36,12 +36,14 @@ spec:
           {{- if .Values.ingress.grpc.exposition.filters }}
           {{- range .Values.ingress.grpc.exposition.filters }}
           - path: /{{ . }}
+            pathType: Prefix
             backend:
               serviceName: {{ $grpcService }}
               servicePort: {{ $grpcPort }}
           {{- end }}
           {{- else}}
           - path: /{{ include "ktor.proto-default-full-path" .}}/
+            pathType: Prefix
             backend:
               serviceName: {{ $grpcService }}
               servicePort: {{ $grpcPort }}
@@ -103,7 +105,8 @@ spec:
     - host: {{ $httpUrl}}
       http:
         paths:
-          - backend:
+          - pathType: Prefix
+            backend:
               serviceName: {{ $httpService }}
               servicePort: 80
 ---
