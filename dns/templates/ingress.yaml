@@ -20,7 +20,6 @@ metadata:
     konghq.com/methods: {{ .Values.methods }}
     {{- end}}
     cert-manager.io/cluster-issuer: letsencrypt-cluster-prod
-    kubernetes.io/ingress.class: kong
     {{- if .Values.externalDnsEnabled }}
     external-dns.alpha.kubernetes.io/hostname: {{ $httpUrl }}
   {{- end }}

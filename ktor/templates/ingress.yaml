@@ -20,7 +20,6 @@ metadata:
     konghq.com/protocols: grpc,grpcs
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: {{ include "ktor.cert-issuer" . }}
-    kubernetes.io/ingress.class: kong
     {{- if .Values.ingress.externalDnsEnabled }}
     external-dns.alpha.kubernetes.io/hostname: {{ $grpcUrl }}
   {{- end }}
@@ -97,7 +96,6 @@ metadata:
     konghq.com/methods: {{ .Values.ingress.http.methods }}
     {{- end}}
     cert-manager.io/cluster-issuer: {{ include "ktor.cert-issuer" . }}
-    kubernetes.io/ingress.class: kong
     {{- if .Values.ingress.externalDnsEnabled }}
     external-dns.alpha.kubernetes.io/hostname: {{ $httpUrl }}
   {{- end }}
