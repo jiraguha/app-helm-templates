@@ -3,7 +3,7 @@
 {{- $grpcService := include "ktor.grpc-seviceName" . -}}
 {{- $grpcPort := .Values.grpc.port -}}
 {{- if .Values.ingress.grpc.enabled  -}}
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: kong
@@ -71,7 +71,7 @@ spec:
 {{- $httpSecret := include "ktor.http-ssl-secret" . -}}
 {{- $httpService := include "ktor.http-seviceName" . -}}
 {{- if .Values.ingress.http.enabled -}}
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: kong

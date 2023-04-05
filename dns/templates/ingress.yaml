@@ -1,7 +1,7 @@
 {{- $httpUrl := include "dns.http-full-url" . -}}
 {{- $httpSecret := include "dns.http-ssl-secret" . -}}
 {{- $httpService := include "dns.http-seviceName" . -}}
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: kong
