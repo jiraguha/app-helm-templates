@@ -25,6 +25,7 @@ metadata:
     external-dns.alpha.kubernetes.io/hostname: {{ $httpUrl }}
   {{- end }}
 spec:
+  ingressClassName: kong
   tls:
     - secretName: {{ $httpSecret }}
       hosts:
@@ -36,5 +37,7 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-              serviceName: {{ $httpService }}
-              servicePort: {{ .Values.port  }}
+              service:
+                name: {{ $httpService }}
+                port:
+                  number: {{ .Values.port  }}

@@ -25,6 +25,7 @@ metadata:
     external-dns.alpha.kubernetes.io/hostname: {{ $grpcUrl }}
   {{- end }}
 spec:
+  ingressClassName: kong
   tls:
     - secretName: {{ $grpcSecret }}
       hosts:
@@ -38,15 +39,19 @@ spec:
           - path: /{{ . }}
             pathType: Prefix
             backend:
-              serviceName: {{ $grpcService }}
-              servicePort: {{ $grpcPort }}
+              service:
+                name: {{ $grpcService }}
+                port:
+                  number: {{ $grpcPort }}
           {{- end }}
           {{- else}}
           - path: /{{ include "spring-boot.proto-default-full-path" .}}/
             pathType: Prefix
             backend:
-              serviceName: {{ $grpcService }}
-              servicePort: {{ $grpcPort }}
+              service:
+                name: {{ $grpcService }}
+                port:
+                  number: {{ $grpcPort }}
           {{- end }}
 ---
 
@@ -97,6 +102,7 @@ metadata:
     external-dns.alpha.kubernetes.io/hostname: {{ $httpUrl }}
   {{- end }}
 spec:
+  ingressClassName: kong
   tls:
     - secretName: {{ $httpSecret }}
       hosts:
@@ -108,8 +114,10 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-              serviceName: {{ $httpService }}
-              servicePort: 80
+              service:
+                name: {{ $httpService }}
+                port:
+                  number: 80
 ---
 
 apiVersion: v1
