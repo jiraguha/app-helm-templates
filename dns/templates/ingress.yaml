@@ -33,7 +33,8 @@ spec:
     - host: {{ $httpUrl}}
       http:
         paths:
-          - pathType: Prefix
+          - path: /
+            pathType: Prefix
             backend:
               serviceName: {{ $httpService }}
               servicePort: {{ .Values.port  }}
