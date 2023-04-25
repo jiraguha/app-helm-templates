@@ -47,6 +47,12 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: "vault-monitoring"
+        - name: secrets-store-auth0
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "vault-auth0"
       containers:
         - name: {{ .Values.appName }}
           image: "{{ include "spring-boot.image" . }}"
@@ -117,6 +123,9 @@ spec:
               readOnly: true
             - name: secrets-store-monitoring
               mountPath: "/mnt/config/monitoring"
+              readOnly: true
+            - name: secrets-store-auth0
+              mountPath: "/mnt/config/auth0"
               readOnly: true
           {{- if .Values.livenessProbe }}
           livenessProbe:
