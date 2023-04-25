@@ -8,8 +8,6 @@ data:
     spring:
       application:
         name: {{.Values.appName}}
-      profiles:
-        active: kube, default
       config:
         use-legacy-processing: false
       zipkin:
