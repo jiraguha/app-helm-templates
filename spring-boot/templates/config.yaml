@@ -9,8 +9,7 @@ data:
       application:
         name: {{.Values.appName}}
       profiles:
-        active: kube
-        include: default
+        active: kube, default
       config:
         use-legacy-processing: false
       zipkin:
