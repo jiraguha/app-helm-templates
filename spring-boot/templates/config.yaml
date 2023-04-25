@@ -12,7 +12,7 @@ data:
         active: kube
         include: default
       config:
-        use-legacy-processing: true
+        use-legacy-processing: false
       zipkin:
         enabled: ${ZIPKIN_ENABLED:true}
         baseUrl: ${ZIPKIN_URL:}

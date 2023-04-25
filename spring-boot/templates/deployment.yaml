@@ -29,11 +29,30 @@ spec:
         - configMap:
             name: {{ .Values.appName }}-config-prop
           name: application-kube
+        - name: secrets-store-mongo
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "vault-mongo"
+        - name: secrets-store-kafka
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "vault-kafka"
+        - name: secrets-store-monitoring
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "vault-monitoring"
       containers:
         - name: {{ .Values.appName }}
           image: "{{ include "spring-boot.image" . }}"
           args:
             - --spring.config.additional-location=/application-kube.yml
+            - --spring.config.import=optional:configtree:/mnt/config/
             - --spring.profiles.active=default,kube
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- $enableDefaultConfig := .Values.enableDefaultConfig }}
@@ -90,6 +109,15 @@ spec:
               name: application-kube
               readOnly: true
               subPath: application-kube.yml
+            - name: secrets-store-mongo
+              mountPath: "/mnt/config/mongo"
+              readOnly: true
+            - name: secrets-store-kafka
+              mountPath: "/mnt/config/kafka"
+              readOnly: true
+            - name: secrets-store-monitoring
+              mountPath: "/mnt/config/monitoring"
+              readOnly: true
           {{- if .Values.livenessProbe }}
           livenessProbe:
 {{ toYaml .Values.livenessProbe | indent 12 }}
