@@ -16,7 +16,7 @@ data:
     {{- if .Values.enableDefaultConfig}}
       data:
         mongodb:
-          uri: mongodb+srv://${mongo.user}:${mongo.password}@${mongo.cluster.url}
+          uri: mongodb+srv://${mongo.user}:${mongo.password}@${mongo.cluster.address}
           database: {{ .Values.appName }}
       kafka:
         producer:
