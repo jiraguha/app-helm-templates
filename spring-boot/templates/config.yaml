@@ -11,24 +11,24 @@ data:
       config:
         use-legacy-processing: false
       zipkin:
-        enabled: ${ZIPKIN_ENABLED:true}
-        baseUrl: ${ZIPKIN_URL:}
+        enabled: ${monitoring.zipkin.enabled:true}
+        baseUrl: ${monitoring.zipkin.url:}
     {{- if .Values.enableDefaultConfig}}
       data:
         mongodb:
-          uri: mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_CLUSTER_ADDRESS}
+          uri: mongodb+srv://${mongo.user}:${mongo.password}@${mongo.cluster.url}
           database: {{ .Values.appName }}
       kafka:
         producer:
           batch-size: 8000
         properties:
-          bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
+          bootstrap.servers: ${kafka.bootstrap.servers}
           sasl.mechanism: PLAIN
-          sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule   required username='${KAFKA_USER}'   password='${KAFKA_PASSWORD}';"
+          sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule   required username='${kafka.user}'   password='${kafka.password}';"
           security.protocol: SASL_SSL
           basic.auth.credentials.source: USER_INFO
-          schema.registry.basic.auth.user.info: ${KAFKA_USER_INFO}
-          schema.registry.url: ${KAFKA_REGISTRY_URL}
+          schema.registry.basic.auth.user.info: ${kafka.user.info}
+          schema.registry.url: ${kafka.registry.url}
     {{- end }}
     graphql:
       packages:

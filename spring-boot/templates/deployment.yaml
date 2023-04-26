@@ -59,7 +59,7 @@ spec:
           image: "{{ include "spring-boot.image" . }}"
           args:
             - --spring.config.additional-location=/application-kube.yml
-            - --spring.config.import=optional:configtree:/mnt/config/
+            - --spring.config.import=optional:configtree:/mnt/config/*/
             - --spring.profiles.active=default,kube
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- $enableDefaultConfig := .Values.enableDefaultConfig }}
