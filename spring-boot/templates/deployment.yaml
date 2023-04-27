@@ -20,7 +20,7 @@ spec:
       annotations:
 {{ toYaml .Values.podAnnotations | indent 8 }}
     spec:
-      serviceAccountName: springboot-app
+      serviceAccountName: {{.Values.serviceAccountName}}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
       {{- toYaml . | nindent 8 }}
@@ -30,39 +30,37 @@ spec:
         - configMap:
             name: {{ .Values.appName }}-config-prop
           name: application-kube
-        - name: secrets-store-mongo
+          {{- $enableDefaultConfig := .Values.enableDefaultConfig }}
+          {{- with .Values.container}}
+          {{- if and .defaultSecretsVolumes $enableDefaultConfig }}
+          {{- range .defaultSecretsVolumes }}
+        - name: secrets-store-{{.name}}
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "vault-mongo"
-        - name: secrets-store-kafka
+              secretProviderClass: {{.secretProviderClass}}
+          {{- end }}
+          {{- end }}
+          {{- if .secretsVolumes }}
+          {{- range .secretsVolumes }}
+        - name: secrets-store-{{.name}}
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "vault-kafka"
-        - name: secrets-store-monitoring
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: "vault-monitoring"
-        - name: secrets-store-auth0
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: "vault-auth0"
+              secretProviderClass: {{.secretProviderClass}}
+          {{- end }}
+          {{- end }}
+          {{- end }}
       containers:
         - name: {{ .Values.appName }}
           image: "{{ include "spring-boot.image" . }}"
           args:
             - --spring.config.additional-location=/application-kube.yml
-            - --spring.config.import=optional:configtree:/mnt/config/*/
+            - --spring.config.import=optional:configtree:{{ .Values.container.secretsMountPath }}/*/
             - --spring.profiles.active=default,kube
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- $enableDefaultConfig := .Values.enableDefaultConfig }}
           {{- with .Values.container}}
           {{- if or (or .environment .secrets) (and .defaultSecrets $enableDefaultConfig) }}
           env:
@@ -116,18 +114,22 @@ spec:
               name: application-kube
               readOnly: true
               subPath: application-kube.yml
-            - name: secrets-store-mongo
-              mountPath: "/mnt/config/mongo"
+          {{- with .Values.container}}
+          {{- if and .defaultSecretsVolumes $enableDefaultConfig }}
+          {{- range .defaultSecretsVolumes }}
+            - name: secrets-store-{{.name}}
+              mountPath: "{{ $.Values.container.secretsMountPath }}/{{.name}}"
               readOnly: true
-            - name: secrets-store-kafka
-              mountPath: "/mnt/config/kafka"
+          {{- end }}
+          {{- end }}
+          {{- if .secretsVolumes }}
+          {{- range .secretsVolumes }}
+            - name: secrets-store-{{.name}}
+              mountPath: "{{ $.Values.container.secretsMountPath }}/{{.name}}"
               readOnly: true
-            - name: secrets-store-monitoring
-              mountPath: "/mnt/config/monitoring"
-              readOnly: true
-            - name: secrets-store-auth0
-              mountPath: "/mnt/config/auth0"
-              readOnly: true
+          {{- end }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.livenessProbe }}
           livenessProbe:
 {{ toYaml .Values.livenessProbe | indent 12 }}

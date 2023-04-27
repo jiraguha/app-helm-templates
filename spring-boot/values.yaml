@@ -19,7 +19,7 @@ image:
 imagePullSecrets:
   - name: docker-registery-secret
 restartPolicy: Always
-
+serviceAccountName: springboot-app
 fullnameOverride: ""
 
 skaffoldEnabled: false
@@ -87,7 +87,15 @@ container:
 #      env:
 #        MYVAR3: Key3InMySecret
   defaultSecrets: {}
-
+  secretsMountPath: /mnt/config
+  secretsVolumes: {}
+  defaultSecretsVolumes:
+    - name: mongo
+      secretProviderClass: vault-mongo
+    - name: kafka
+      secretProviderClass: vault-kafka
+    - name: monitoring
+      secretProviderClass: vault-monitoring
 
 resources: { }
   # We usually recommend not to specify default resources and to leave this as a conscious
