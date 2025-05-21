@@ -14,8 +14,7 @@ image:
   pullPolicy: Always
   ref: none
 
-imagePullSecrets:
-  - name: docker-registry-secret
+imagePullSecrets: []
 restartPolicy: Always
 serviceAccountName: default
 fullnameOverride: ""
