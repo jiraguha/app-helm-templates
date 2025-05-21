@@ -8,7 +8,7 @@ mainDnsDomain: example.com
 namespace: apps
 
 appName: bun-hono-app
-replicaCount: 2 # minReplicas in hpa
+replicaCount: 2
 image:
   repository: registry.example.com/your-org/bun-hono-app
   tag: latest
@@ -48,6 +48,13 @@ ingress:
   httpsOnly: true
   externalDnsEnabled: true
   className: nginx
+  # Complete hostname override (if set, this exact hostname will be used)
+  hostnameOverride: ""
+  # Path customization
+  path:
+    prefix: "/"
+    # Use pathType Prefix, Exact, or ImplementationSpecific
+    type: "Prefix"
 
 # Configure pod annotations
 podAnnotations: {}

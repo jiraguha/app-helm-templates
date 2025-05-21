@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "bun-hono.fullname" . -}}
-{{- $domain := printf "%s.%s.%s" $fullName .Values.environment .Values.mainDnsDomain -}}
+{{- $domain := .Values.ingress.hostnameOverride | default (printf "%s.%s.%s" $fullName .Values.environment .Values.mainDnsDomain) -}}
 {{- $svcPort := .Values.service.port -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -31,8 +31,8 @@ spec:
     - host: {{ $domain }}
       http:
         paths:
-          - path: /
-            pathType: Prefix
+          - path: {{ .Values.ingress.path.prefix | default "/" }}
+            pathType: {{ .Values.ingress.path.type | default "Prefix" }}
             backend:
               service:
                 name: {{ $fullName }}
