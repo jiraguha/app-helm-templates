@@ -41,10 +41,10 @@ http:
 ingress:
   className: kong
   annotations:
-    # - nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    - konghq.com/override: https-only
-    - konghq.com/protocols: https
-    - konghq.com/strip-path: "true"
+    #nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    konghq.com/override: https-only
+    konghq.com/protocols: https
+    konghq.com/strip-path: "true"
   externalDnsEnabled: true
 
   # Complete hostname override (if set, this exact hostname will be used)
