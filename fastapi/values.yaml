@@ -15,8 +15,8 @@ image:
   pullPolicy: Always
   ref: none
 
-imagePullSecrets:
-  - name: docker-registry-secret
+imagePullSecrets: []
+  #- name: docker-registry-secret
 restartPolicy: Always
 serviceAccountName: default
 fullnameOverride: ""
@@ -62,15 +62,15 @@ podAnnotations: {}
 #  prometheus.io/port: "8000"
 
 # Python specific settings
-python:
-  command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+python: {}
+  # command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
   # Set to true to enable Gunicorn for production
-  useGunicorn: false
+  #useGunicorn: false
   # Gunicorn settings (used only if useGunicorn is true)
-  gunicorn:
-    workers: 4
-    workerClass: "uvicorn.workers.UvicornWorker"
-    command: ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-b", "0.0.0.0:8000"]
+  #gunicorn:
+  #  workers: 4
+  #  workerClass: "uvicorn.workers.UvicornWorker"
+  #  command: ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-b", "0.0.0.0:8000"]
 
 container:
   # Extra environment variables to be injected
