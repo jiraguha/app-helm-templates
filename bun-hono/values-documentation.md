@@ -171,8 +171,9 @@ container:
     NODE_ENV: production
     LOG_LEVEL: info
   secrets:
-    - name: db-credentials
+    - name: db-credentials-secretNameRef
       env:
+        VALUE_REF: VALUE_IN_CONTAINER
         DB_USERNAME: username
         DB_PASSWORD: password
 ```
