@@ -177,7 +177,6 @@ container:
         DB_USERNAME: username
         DB_PASSWORD: password
 ```
-
 ### Setting Up Pod Disruption Budget
 
 ```yaml
