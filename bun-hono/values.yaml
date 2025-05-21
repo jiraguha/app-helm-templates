@@ -9,7 +9,7 @@ namespace: apps
 appName: bun-hono-app
 replicaCount: 2
 image:
-  repository: registry.example.com/your-org/bun-hono-app
+  repository: 042762504789.dkr.ecr.eu-west-3.amazonaws.com/bun-example
   tag: latest
   pullPolicy: Always
   ref: none
@@ -25,9 +25,6 @@ logLevel:
   root: info
   packages: {}
 
-enableDefaultConfig: true
-# Ability to manage the app configmap outside this chart
-internalConfig: true
 
 service:
   type: ClusterIP
@@ -43,10 +40,9 @@ ingress:
   enabled: false
   className: kong
   annotations:
-    # - nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    - konghq.com/override: https-only
-    - konghq.com/protocols: https
-    - konghq.com/strip-path: "true"
+    konghq.com/override: https-only
+    konghq.com/protocols: https
+    konghq.com/strip-path: "true"
   externalDnsEnabled: true
 
   # Complete hostname override (if set, this exact hostname will be used)

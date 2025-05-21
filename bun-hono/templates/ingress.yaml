@@ -9,10 +9,10 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "bun-hono.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
+    {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: {{ .Values.certificateIssuer }}
     {{- if .Values.ingress.externalDnsEnabled }}
