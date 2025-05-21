@@ -65,11 +65,8 @@ This document provides a comprehensive explanation of all configuration values a
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `ingress.isNamespaced` | Include namespace in ingress hostnames | `true` |
 | `ingress.enabled` | Enable ingress | `false` |
 | `ingress.annotations` | Additional ingress annotations | `{}` |
-| `ingress.stripPath` | Strip path prefix | `"true"` |
-| `ingress.httpsOnly` | Force HTTPS | `true` |
 | `ingress.externalDnsEnabled` | Enable ExternalDNS integration | `true` |
 | `ingress.className` | Ingress class name | `nginx` |
 | `ingress.hostnameOverride` | Override hostname pattern completely | `""` |
@@ -82,8 +79,6 @@ This document provides a comprehensive explanation of all configuration values a
 |-----------|-------------|---------|
 | `container.environment` | Environment variables to inject | `{}` |
 | `container.secrets` | Secrets to inject as environment variables | `{}` |
-| `container.secretsMountPath` | Path to mount secrets | `/mnt/config` |
-| `container.secretsVolumes` | Secret volumes to mount | `{}` |
 
 ## Resource Settings
 

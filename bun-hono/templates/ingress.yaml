@@ -18,9 +18,6 @@ metadata:
     {{- if .Values.ingress.externalDnsEnabled }}
     external-dns.alpha.kubernetes.io/hostname: {{ $domain }}
     {{- end }}
-    {{- if .Values.ingress.httpsOnly }}
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   tls:

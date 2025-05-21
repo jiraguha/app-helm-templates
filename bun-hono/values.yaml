@@ -1,7 +1,6 @@
 # Default values for bun-hono
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
 certificateIssuer: "letsencrypt-cluster-prod"
 environment: dev
 mainDnsDomain: example.com
@@ -41,13 +40,15 @@ http:
 
 # Ingress configuration
 ingress:
-  isNamespaced: true
   enabled: false
-  annotations: {}
-  stripPath: "true"
-  httpsOnly: true
+  className: kong
+  annotations:
+    # - nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    - konghq.com/override: https-only
+    - konghq.com/protocols: https
+    - konghq.com/strip-path: "true"
   externalDnsEnabled: true
-  className: nginx
+
   # Complete hostname override (if set, this exact hostname will be used)
   hostnameOverride: ""
   # Path customization
@@ -67,8 +68,6 @@ container:
   environment: {}
   # Environment variables from secrets
   secrets: {}
-  secretsMountPath: /mnt/config
-  secretsVolumes: {}
 
 resources: {}
   # limits:
@@ -106,3 +105,5 @@ hpa: {}
 
 podDisruptionBudget: {}
 #  minAvailable: 1
+congigMap:
+  enabled: true
