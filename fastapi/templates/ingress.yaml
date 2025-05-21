@@ -1,0 +1,38 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "fastapi.fullname" . -}}
+{{- $domain := .Values.ingress.hostnameOverride | default (printf "%s.%s.%s" $fullName .Values.environment .Values.mainDnsDomain) -}}
+{{- $svcPort := .Values.service.port -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "fastapi.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: {{ .Values.certificateIssuer }}
+    {{- if .Values.ingress.externalDnsEnabled }}
+    external-dns.alpha.kubernetes.io/hostname: {{ $domain }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  tls:
+    - hosts:
+        - {{ $domain }}
+      secretName: {{ $domain | replace "." "-" }}-tls
+  rules:
+    - host: {{ $domain }}
+      http:
+        paths:
+          - path: {{ .Values.ingress.path.prefix | default "/" }}
+            pathType: {{ .Values.ingress.path.type | default "Prefix" }}
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+{{- end }}

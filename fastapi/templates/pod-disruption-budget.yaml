@@ -1,0 +1,15 @@
+{{- if .Values.podDisruptionBudget -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ include "fastapi.fullname" . }}
+  labels:
+    {{- include "fastapi.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "fastapi.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

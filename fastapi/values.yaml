@@ -1,15 +1,16 @@
-# Default values for bun-hono
+# Default values for fastapi
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
 certificateIssuer: "letsencrypt-cluster-prod"
 environment: dev
 mainDnsDomain: example.com
 namespace: apps
 
-appName: bun-hono-app
+appName: fastapi-app
 replicaCount: 2
 image:
-  repository: registry.example.com/your-org/bun-hono-app
+  repository: registry.example.com/your-org/fastapi-app
   tag: latest
   pullPolicy: Always
   ref: none
@@ -21,9 +22,7 @@ serviceAccountName: default
 fullnameOverride: ""
 
 skaffoldEnabled: false
-logLevel:
-  root: info
-  packages: {}
+logLevel: info
 
 enableDefaultConfig: true
 # Ability to manage the app configmap outside this chart
@@ -35,12 +34,11 @@ service:
 
 # Application port configuration
 http:
-  port: 3000
-  containerPort: 3000
+  port: 80
+  containerPort: 8000  # FastAPI default is 8000
 
 # Ingress configuration
 ingress:
-  enabled: false
   className: kong
   annotations:
     # - nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -61,18 +59,31 @@ ingress:
 podAnnotations: {}
 #  prometheus.io/scrape: "true"
 #  prometheus.io/path: "/metrics"
-#  prometheus.io/port: "3000"
+#  prometheus.io/port: "8000"
+
+# Python specific settings
+python:
+  command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+  # Set to true to enable Gunicorn for production
+  useGunicorn: false
+  # Gunicorn settings (used only if useGunicorn is true)
+  gunicorn:
+    workers: 4
+    workerClass: "uvicorn.workers.UvicornWorker"
+    command: ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-b", "0.0.0.0:8000"]
 
 container:
   # Extra environment variables to be injected
   environment: {}
   # Environment variables from secrets
   secrets: {}
+  secretsMountPath: /app/config
+  secretsVolumes: {}
 
 resources: {}
   # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
+  #   cpu: 200m
+  #   memory: 256Mi
   # requests:
   #   cpu: 100m
   #   memory: 128Mi

@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: "0.1.0"
+description: FastAPI Python application
+name: fastapi
+version: 0.1.0
+home: https://github.com/yourusername/helm-charts
+keywords:
+  - python
+  - fastapi
+  - api
+  - web
+maintainers:
+  - name: jiraguha
