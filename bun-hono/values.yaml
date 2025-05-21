@@ -1,0 +1,101 @@
+# Default values for bun-hono
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+certificateIssuer: "letsencrypt-cluster-prod"
+environment: dev
+mainDnsDomain: example.com
+namespace: apps
+
+appName: bun-hono-app
+replicaCount: 2 # minReplicas in hpa
+image:
+  repository: registry.example.com/your-org/bun-hono-app
+  tag: latest
+  pullPolicy: Always
+  ref: none
+
+imagePullSecrets:
+  - name: docker-registry-secret
+restartPolicy: Always
+serviceAccountName: default
+fullnameOverride: ""
+
+skaffoldEnabled: false
+logLevel:
+  root: info
+  packages: {}
+
+enableDefaultConfig: true
+# Ability to manage the app configmap outside this chart
+internalConfig: true
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Application port configuration
+http:
+  port: 3000
+  containerPort: 3000
+
+# Ingress configuration
+ingress:
+  isNamespaced: true
+  enabled: false
+  annotations: {}
+  stripPath: "true"
+  httpsOnly: true
+  externalDnsEnabled: true
+  className: nginx
+
+# Configure pod annotations
+podAnnotations: {}
+#  prometheus.io/scrape: "true"
+#  prometheus.io/path: "/metrics"
+#  prometheus.io/port: "3000"
+
+container:
+  # Extra environment variables to be injected
+  environment: {}
+  # Environment variables from secrets
+  secrets: {}
+  secretsMountPath: /mnt/config
+  secretsVolumes: {}
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+hpa: {}
+#  minReplicas: 2
+#  maxReplicas: 4
+#  cpuMax: 80
+#  memoryMax: 70
+
+podDisruptionBudget: {}
+#  minAvailable: 1

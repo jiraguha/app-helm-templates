@@ -1,0 +1,15 @@
+{{- if .Values.podDisruptionBudget -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ include "bun-hono.fullname" . }}
+  labels:
+    {{- include "bun-hono.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "bun-hono.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

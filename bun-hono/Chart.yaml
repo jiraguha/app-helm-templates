@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: "0.1.0"
+description: Bun-Hono web application
+name: bun-hono
+version: 0.1.0
+home: https://github.com/jiraguha/app-templates/bun-hono
+keywords:
+  - bun
+  - hono
+  - typescript
+  - javascript
+maintainers:
+  - name: jiraguha

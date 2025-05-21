@@ -1,0 +1,25 @@
+{{- if .Values.internalConfig }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.appName }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: {{ .Values.appName }}-config
+data:
+  config.json: |-
+    {
+      "app": {
+        "name": "{{ .Values.appName }}",
+        "environment": "{{ .Values.environment }}"
+      },
+      "logging": {
+        "level": "{{ .Values.logLevel.root }}"
+      }
+      {{- if .Values.enableDefaultConfig }},
+      "server": {
+        "port": {{ .Values.http.port }}
+      }
+      {{- end }}
+    }
+{{- end }}

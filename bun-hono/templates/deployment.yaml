@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bun-hono.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "bun-hono.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "bun-hono.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        forcedRef: {{ .Values.image.ref }}
+        app.kubernetes.io/name: {{ include "bun-hono.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: {{ .Values.restartPolicy }}
+      volumes:
+        - configMap:
+            name: {{ .Values.appName }}-config
+          name: app-config
+          {{- with .Values.container}}
+          {{- if .secretsVolumes }}
+          {{- range .secretsVolumes }}
+        - name: secrets-store-{{.name}}
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{.secretProviderClass}}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+      containers:
+        - name: {{ .Values.appName }}
+          image: "{{ include "bun-hono.image" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.container}}
+          {{- if or .environment .secrets }}
+          env:
+            {{- range $key, $value := .environment }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- if .secrets }}
+            {{- range .secrets }}
+            {{- $secretName := .name }}
+            {{- range $key, $value := .env }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ $value }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.http.containerPort }}
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /app/config
+              name: app-config
+              readOnly: true
+          {{- with .Values.container}}
+          {{- if .secretsVolumes }}
+          {{- range .secretsVolumes }}
+            - name: secrets-store-{{.name}}
+              mountPath: "{{ $.Values.container.secretsMountPath }}/{{.name}}"
+              readOnly: true
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
