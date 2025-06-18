@@ -64,7 +64,27 @@ container:
   # Environment variables from secrets
   secrets: {}
   configMaps: {}
-
+    # Example 1: Mount .env file as volume
+    #- name: vite-env-config
+    #  mountPath: /app/.env
+    #  subPath: .env
+    #  readOnly: true
+    #  # Optional: specify file permissions
+    #  defaultMode: 0644
+    #  # Optional: specify specific items from ConfigMap
+    #  items:
+    #    - key: .env
+    #      path: .env
+    
+    # Example 2: Mount multiple files from ConfigMap
+    #- name: config-files
+    #  mountPath: /app/config
+    #  readOnly: true
+    #  items:
+    #    - key: app.json
+    #      path: app.json
+    #    - key: database.json
+    #      path: database.json
 resources: {}
   # limits:
   #   cpu: 100m
