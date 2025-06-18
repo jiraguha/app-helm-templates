@@ -63,6 +63,7 @@ container:
   environment: {}
   # Environment variables from secrets
   secrets: {}
+  configMaps: {}
 
 resources: {}
   # limits:
