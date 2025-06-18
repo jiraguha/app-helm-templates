@@ -30,7 +30,7 @@ spec:
         - name: {{ .Values.appName }}
           image: "{{ include "bun-hono.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.container}}
+          {{- with .Values.container }}
           {{- if or .environment .secrets }}
           env:
             {{- range $key, $value := .environment }}
@@ -50,6 +50,19 @@ spec:
             {{- end }}
             {{- end }}
           {{- end }}
+          {{- if .configMaps }}
+          volumeMounts:
+            {{- range .configMaps }}
+            {{- if .mountPath }}
+            - name: {{ .name }}-volume
+              mountPath: {{ .mountPath }}
+              {{- if .subPath }}
+              subPath: {{ .subPath }}
+              {{- end }}
+              readOnly: {{ .readOnly | default true }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
           {{- end }}
           ports:
             - name: http
@@ -65,21 +78,6 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.container }}
-          {{- if .configMaps }}
-          volumeMounts:
-            {{- range .configMaps }}
-            {{- if .mountPath }}
-            - name: {{ .name }}-volume
-              mountPath: {{ .mountPath }}
-              {{- if .subPath }}
-              subPath: {{ .subPath }}
-              {{- end }}
-              readOnly: {{ .readOnly | default true }}
-            {{- end }}
-            {{- end }}
-          {{- end }}
-          {{- end }}
       {{- with .Values.container }}
       {{- if .configMaps }}
       volumes:
